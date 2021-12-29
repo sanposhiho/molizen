@@ -8,9 +8,9 @@ type Context struct {
 }
 
 type parent struct {
-	locker         parentActorLocker
-	unlocker       parentActorUnlocker
-	isUnlockedOnce bool
+	locker       parentActorLocker
+	unlocker     parentActorUnlocker
+	isLockedByUs bool
 }
 
 type parentActorLocker func()
@@ -22,9 +22,9 @@ func NewContext(
 ) Context {
 	return Context{
 		parent: parent{
-			locker:         locker,
-			unlocker:       unlocker,
-			isUnlockedOnce: false,
+			locker:       locker,
+			unlocker:     unlocker,
+			isLockedByUs: true,
 		},
 	}
 }
@@ -32,10 +32,21 @@ func NewContext(
 func (c *Context) UnlockParent() {
 	c.mu.Lock()
 	defer c.mu.Unlock()
-	if c.parent.isUnlockedOnce {
-		// parent actor is already unlocked once.
+
+	if c.parent.isLockedByUs {
+		c.parent.unlocker()
+		c.parent.isLockedByUs = false
 		return
 	}
-	c.parent.unlocker()
-	return
+}
+
+func (c *Context) LockParent() {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
+	if c.parent.isLockedByUs {
+		c.parent.locker()
+		c.parent.isLockedByUs = true
+		return
+	}
 }
