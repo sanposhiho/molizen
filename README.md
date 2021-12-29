@@ -41,7 +41,7 @@ You need to use go1.18+ because Molize uses generics.
 
 You need to install `molizen` comamnd.
 
-```go
+```
 go install github.com/sanposhiho/molizen/cmd/molizen@latest
 ```
 
@@ -112,6 +112,7 @@ func (a *UserActor) SetName(ctx actor.Context, name string) future.Future[SetNam
 		}
 
 		ctx.LockParent()
+		
 		f.Send(ret)
 	}()
 
@@ -128,7 +129,8 @@ func (a *UserActor) SetName(ctx actor.Context, name string) future.Future[SetNam
 You can use generated `UserActor` like this.
 
 ```go
-actor := actor_user.New(user.User{})
+ctx := actor.NewEmptyContext()
+actor := actor_user.New(ctx, user.User{})
 future := actor.SetName("sanposhiho")
 
 // get the result from future.

@@ -4,7 +4,7 @@ import "sync"
 
 type Context struct {
 	mu     sync.Mutex
-	parent parent
+	parent *parent
 }
 
 type parent struct {
@@ -16,12 +16,16 @@ type parent struct {
 type parentActorLocker func()
 type parentActorUnlocker func()
 
+func NewEmptyContext() Context {
+	return Context{}
+}
+
 func NewContext(
 	locker parentActorLocker,
 	unlocker parentActorUnlocker,
 ) Context {
 	return Context{
-		parent: parent{
+		parent: &parent{
 			locker:       locker,
 			unlocker:     unlocker,
 			isLockedByUs: true,
@@ -30,6 +34,12 @@ func NewContext(
 }
 
 func (c *Context) UnlockParent() {
+	if !c.hasParent() {
+		return
+	}
+
+	c.mu.Lock()
+	defer c.mu.Unlock()
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
@@ -41,6 +51,10 @@ func (c *Context) UnlockParent() {
 }
 
 func (c *Context) LockParent() {
+	if !c.hasParent() {
+		return
+	}
+
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
@@ -49,4 +63,8 @@ func (c *Context) LockParent() {
 		c.parent.isLockedByUs = true
 		return
 	}
+}
+
+func (c *Context) hasParent() bool {
+	return c.parent != nil
 }
