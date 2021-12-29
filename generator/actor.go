@@ -200,9 +200,9 @@ func (g *Generator) GenerateMethod(mockType string, m *model.Method, outputPkgPa
 	g.p("defer %s.lock.Unlock()", receiverName)
 	g.p("")
 	if len(resultVars) > 0 {
-		g.p("%v := %s.internal.%v()", strings.Join(resultVars, ", "), receiverName, m.Name)
+		g.p("%v := %s.internal.%v(%v)", strings.Join(resultVars, ", "), receiverName, m.Name, strings.Join(argNames, ", "))
 	} else {
-		g.p("%s.internal.%v()", receiverName, m.Name)
+		g.p("%s.internal.%v(%v)", receiverName, m.Name, strings.Join(argNames, ", "))
 	}
 	g.p("")
 	g.p("ret := %v{", resultType)

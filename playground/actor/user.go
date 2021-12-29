@@ -38,7 +38,7 @@ func (a *UserActor) SetName(ctx actor.Context, name string) future.Future[SetNam
 		a.lock.Lock()
 		defer a.lock.Unlock()
 
-		ret0 := a.internal.SetName()
+		ret0 := a.internal.SetName(ctx, name)
 
 		ret := SetNameResult{
 			ret0: ret0,
