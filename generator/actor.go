@@ -213,6 +213,8 @@ func (g *Generator) GenerateMethod(mockType string, m *model.Method, outputPkgPa
 	g.out()
 	g.p("}")
 	g.p("")
+	g.p("ctx.LockParent()")
+	g.p("")
 	g.p("f.Send(ret)")
 	g.out()
 	g.p("}()")

@@ -111,6 +111,7 @@ func (a *UserActor) SetName(ctx actor.Context, name string) future.Future[SetNam
 			ret0: ret0,
 		}
 
+		ctx.LockParent()
 		f.Send(ret)
 	}()
 
