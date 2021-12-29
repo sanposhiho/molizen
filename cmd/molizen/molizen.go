@@ -15,7 +15,7 @@ import (
 
 func main() {
 	var (
-		source        = flag.String("source", "./playground/user/user.go", "Input Go source file.")
+		source        = flag.String("source", "", "Input Go source file.")
 		destination   = flag.String("destination", "", "Output file; defaults to stdout.")
 		packageOut    = flag.String("package", "", "Package of the generated code; defaults to the package of the input with a 'actor_' prefix.")
 		copyrightFile = flag.String("copyright_file", "", "Copyright file used to add copyright header")
