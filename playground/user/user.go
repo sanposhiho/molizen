@@ -1,9 +1,11 @@
 package user
 
 import (
-	"github.com/sanposhiho/molizen/actor"
+	"github.com/sanposhiho/molizen/context"
 )
 
 type User interface {
-	SetName(ctx actor.Context, name string) string
+	SetAge(ctx context.Context, age int)
+	IncrementAge(ctx context.Context)
+	GetAge(ctx context.Context) int
 }
