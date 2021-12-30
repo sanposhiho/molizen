@@ -33,7 +33,7 @@ Molizen requires Go 1.18+.
 
 ### 0. install
 
-You need to install `molizen` comamnd.
+You need to install `molizen` command.
 
 ```shell
 go install github.com/sanposhiho/molizen/cmd/molizen@latest
