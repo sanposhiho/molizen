@@ -14,8 +14,8 @@ import (
 )
 
 func main() {
-	actormain()
 	nonactormain()
+	actormain()
 }
 
 func nonactormain() {
@@ -57,7 +57,7 @@ func actormain() {
 	g.Wait()
 
 	future2 := actor.GetAge(ctx)
-	fmt.Println("[using struct] Result: ", future2.Get().Ret0)
+	fmt.Println("[using actor] Result: ", future2.Get().Ret0)
 }
 
 type User struct {
