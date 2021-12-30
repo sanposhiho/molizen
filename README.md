@@ -1,6 +1,6 @@
 # Molizen
 
-Molizen is a type-safe actor framework for Go. 
+Molizen is a typed actor framework for Go. 
 
 This is a POWERFUL WEAPON to defeat "the difficulty of parallel programming" like race conditions and deadlocks.
 
@@ -19,9 +19,10 @@ This is a POWERFUL WEAPON to defeat "the difficulty of parallel programming" lik
 		- [race condition and `sync` package in Go](#race-condition-and-sync-package-in-go)
 			- [about `-race` option in Go](#about--race-option-in-go)
 	- [Alternatives for actor-model in Go](#alternatives-for-actor-model-in-go)
-		- [protoactor-go](#protoactor-go)
+		- [asynkron/protoactor-go](#asynkronprotoactor-go)
 			- [Sending messages explicitly](#sending-messages-explicitly)
 			- [un-typed message passing](#un-typed-message-passing)
+		- [ergo-services/ergo](#ergo-servicesergo)
 
 
 ## Getting Started
@@ -195,9 +196,11 @@ But, this is a tool that discovers race conditions at runtime, doesn't check all
 
 ## Alternatives for actor-model in Go
 
-### protoactor-go
+This section compares Molizen with alternatives for actor-model in Go.
 
-[protoactor-go](https://github.com/asynkron/protoactor-go)
+### asynkron/protoactor-go
+
+[asynkron/protoactor-go](https://github.com/asynkron/protoactor-go)
 
 > Proto Actor - Ultra fast distributed actors for Go, C# and Java/Kotlin
 
@@ -261,3 +264,10 @@ func main() {
 
 This code passes compiling because any type of message can be sent.
 You can't notice that You are sending the wrong message(`HelloV2`) at compile time.
+
+
+### ergo-services/ergo
+
+[ergo-services/ergo](https://github.com/ergo-services/ergo)
+
+**TBD**
