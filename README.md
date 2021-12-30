@@ -132,6 +132,8 @@ future := actor.SetName(ctx, "sanposhiho")
 result := future.Get()
 ```
 
+Some examples of its use can be found [here](/playground/scenarios).
+
 ## Design
 
 It is designed with reference to `actor` newly introduced in Swift5.5.
