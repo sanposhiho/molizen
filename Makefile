@@ -4,4 +4,4 @@ playground:
 
 .PHONY: scenario
 scenario:
-	go1.18beta1 run playground/scenario/main.go
+	go1.18beta1 run playground/scenarios/scenario$(WHAT)/main.go

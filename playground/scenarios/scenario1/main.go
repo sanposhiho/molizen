@@ -69,6 +69,8 @@ func (u *User) SetAge(ctx context.Context, age int) {
 	u.age = age
 }
 
+// IncrementAge increment user's age.
+// Note: not thread safe.
 func (u *User) IncrementAge(ctx context.Context) {
 	age := u.age
 	u.age = age + 1
