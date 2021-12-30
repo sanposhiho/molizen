@@ -5,12 +5,12 @@ import (
 	"strconv"
 	"sync"
 
+	actor_user "github.com/sanposhiho/molizen/playground/scenarios/scenario1/actor"
+
 	"github.com/sanposhiho/molizen/future/group"
 	"github.com/sanposhiho/molizen/node"
 
 	"github.com/sanposhiho/molizen/context"
-
-	actor_user "github.com/sanposhiho/molizen/playground/actor"
 )
 
 func main() {

@@ -8,7 +8,7 @@ import (
 
 	context0 "github.com/sanposhiho/molizen/context"
 	future "github.com/sanposhiho/molizen/future"
-	user "github.com/sanposhiho/molizen/playground/user"
+	user "github.com/sanposhiho/molizen/playground/scenarios/scenario1/user"
 )
 
 // UserActor is a actor of User interface.
