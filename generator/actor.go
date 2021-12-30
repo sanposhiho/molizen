@@ -188,7 +188,7 @@ func (g *Generator) GenerateMethod(mockType string, m *model.Method, outputPkgPa
 	}
 
 	g.p("// %v actor base method.", m.Name)
-	g.p("func (%v *%v) %v(%v) future.Future[%v] {", receiverName, mockType, m.Name, argString, resultType)
+	g.p("func (%v *%v) %v(%v) *future.Future[%v] {", receiverName, mockType, m.Name, argString, resultType)
 	g.in()
 	g.p("ctx.UnlockParent()")
 	g.p("newctx := ctx.NewChildContext(a, %v.lock.Lock, %v.lock.Unlock)", receiverName, receiverName)

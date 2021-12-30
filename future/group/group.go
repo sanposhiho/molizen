@@ -1,30 +1,39 @@
 package group
 
 import (
+	"errors"
+	"fmt"
 	"sync"
 
 	"github.com/sanposhiho/molizen/future"
 )
 
 type FutureGroup[T any] struct {
-	futures map[string]future.Future[T]
+	futures map[string]*future.Future[T]
 	mu      sync.Mutex
 }
 
 func NewFutureGroup[T any]() FutureGroup[T] {
 	return FutureGroup[T]{
-		futures: make(map[string]future.Future[T]),
+		futures: make(map[string]*future.Future[T]),
 	}
 }
 
-func (f FutureGroup[T]) Register(fu future.Future[T], key string) {
+func (f FutureGroup[T]) Register(fu *future.Future[T], key string) {
 	f.mu.Lock()
 	defer f.mu.Unlock()
 
 	f.futures[key] = fu
 }
 
-func (f FutureGroup[T]) Get(key string) T {
+var ErrNotFound = errors.New("future is not found")
+
+func (f FutureGroup[T]) Get(key string) (T, error) {
+	fu, ok := f.futures[key]
+	if !ok {
+		return T{}, fmt.Errorf("get a future, key: %v, err: %w", key, ErrNotFound)
+	}
+
 	return f.futures[key].Get()
 }
 

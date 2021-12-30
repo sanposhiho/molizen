@@ -29,7 +29,7 @@ type GetAgeResult struct {
 }
 
 // GetAge actor base method.
-func (a *UserActor) GetAge(ctx context0.Context) future.Future[GetAgeResult] {
+func (a *UserActor) GetAge(ctx context0.Context) *future.Future[GetAgeResult] {
 	ctx.UnlockParent()
 	newctx := ctx.NewChildContext(a, a.lock.Lock, a.lock.Unlock)
 
@@ -57,7 +57,7 @@ type IncrementAgeResult struct {
 }
 
 // IncrementAge actor base method.
-func (a *UserActor) IncrementAge(ctx context0.Context) future.Future[IncrementAgeResult] {
+func (a *UserActor) IncrementAge(ctx context0.Context) *future.Future[IncrementAgeResult] {
 	ctx.UnlockParent()
 	newctx := ctx.NewChildContext(a, a.lock.Lock, a.lock.Unlock)
 
@@ -78,12 +78,38 @@ func (a *UserActor) IncrementAge(ctx context0.Context) future.Future[IncrementAg
 	return f
 }
 
+// SayResult is the result type for Say.
+type SayResult struct {
+}
+
+// Say actor base method.
+func (a *UserActor) Say(ctx context0.Context, msg string) *future.Future[SayResult] {
+	ctx.UnlockParent()
+	newctx := ctx.NewChildContext(a, a.lock.Lock, a.lock.Unlock)
+
+	f := future.New[SayResult]()
+	go func() {
+		a.lock.Lock()
+		defer a.lock.Unlock()
+
+		a.internal.Say(newctx, msg)
+
+		ret := SayResult{}
+
+		ctx.LockParent()
+
+		f.Send(ret)
+	}()
+
+	return f
+}
+
 // SetAgeResult is the result type for SetAge.
 type SetAgeResult struct {
 }
 
 // SetAge actor base method.
-func (a *UserActor) SetAge(ctx context0.Context, age int) future.Future[SetAgeResult] {
+func (a *UserActor) SetAge(ctx context0.Context, age int) *future.Future[SetAgeResult] {
 	ctx.UnlockParent()
 	newctx := ctx.NewChildContext(a, a.lock.Lock, a.lock.Unlock)
 

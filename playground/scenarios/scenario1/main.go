@@ -79,3 +79,7 @@ func (u *User) IncrementAge(ctx context.Context) {
 func (u *User) GetAge(ctx context.Context) int {
 	return u.age
 }
+
+func (u *User) Say(ctx context.Context, msg string) {
+	fmt.Println(msg)
+}
