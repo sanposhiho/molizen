@@ -26,13 +26,13 @@ This is a POWERFUL WEAPON to defeat "the difficulty of parallel programming" lik
 
 ## Getting Started
 
-You need to use go1.18+ because Molize uses generics.
+Molizen requires Go 1.18+. 
 
 ### 0. install
 
 You need to install `molizen` comamnd.
 
-```
+```shell
 go install github.com/sanposhiho/molizen/cmd/molizen@latest
 ```
 
