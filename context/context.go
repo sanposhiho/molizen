@@ -1,13 +1,21 @@
-package actor
+package context
 
-import "sync"
+import (
+	"sync"
+
+	"github.com/sanposhiho/molizen/system"
+
+	"github.com/sanposhiho/molizen/actor"
+)
 
 type Context struct {
 	mu     sync.Mutex
+	system *system.ActorSystem
 	parent *parent
 }
 
 type parent struct {
+	actor        actor.Actor
 	locker       parentActorLocker
 	unlocker     parentActorUnlocker
 	isLockedByUs bool
@@ -16,14 +24,13 @@ type parent struct {
 type parentActorLocker func()
 type parentActorUnlocker func()
 
-func NewEmptyContext() Context {
-	return Context{}
-}
-
-func NewContext(
+func (c *Context) NewChildContext(
+	actor actor.Actor,
 	locker parentActorLocker,
 	unlocker parentActorUnlocker,
 ) Context {
+	c.system.RegisterActor(actor, c.parent)
+
 	return Context{
 		parent: &parent{
 			locker:       locker,

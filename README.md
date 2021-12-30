@@ -1,5 +1,7 @@
 # Molizen
 
+**not production-ready**
+
 Molizen is a typed actor framework for Go. 
 
 This is a POWERFUL WEAPON to defeat "the difficulty of parallel programming" like race conditions and deadlocks.
@@ -121,7 +123,8 @@ func (a *UserActor) SetName(ctx actor.Context, name string) future.Future[SetNam
 You can use generated `UserActor` like this.
 
 ```go
-ctx := actor.NewEmptyContext()
+node := node.NewNode()
+ctx := node.NewContext()
 actor := actor_user.New(user.User{})
 future := actor.SetName(ctx, "sanposhiho")
 
