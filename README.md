@@ -130,8 +130,8 @@ You can use generated `UserActor` like this.
 
 ```go
 ctx := actor.NewEmptyContext()
-actor := actor_user.New(ctx, user.User{})
-future := actor.SetName("sanposhiho")
+actor := actor_user.New(user.User{})
+future := actor.SetName(ctx, "sanposhiho")
 
 // get the result from future.
 result := future.Get()

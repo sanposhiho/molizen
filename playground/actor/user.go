@@ -31,14 +31,14 @@ type SetNameResult struct {
 // SetName actor base method.
 func (a *UserActor) SetName(ctx actor.Context, name string) future.Future[SetNameResult] {
 	ctx.UnlockParent()
-	ctx = actor.NewContext(a.lock.Lock, a.lock.Unlock)
+	newctx := actor.NewContext(a.lock.Lock, a.lock.Unlock)
 
 	f := future.New[SetNameResult]()
 	go func() {
 		a.lock.Lock()
 		defer a.lock.Unlock()
 
-		ret0 := a.internal.SetName(ctx, name)
+		ret0 := a.internal.SetName(newctx, name)
 
 		ret := SetNameResult{
 			ret0: ret0,

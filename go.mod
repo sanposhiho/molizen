@@ -1,6 +1,6 @@
 module github.com/sanposhiho/molizen
 
-go 1.17
+go 1.18
 
 require (
 	github.com/sanposhiho/mock v1.6.1-0.20211228070726-5682d2c91548

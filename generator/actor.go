@@ -191,7 +191,7 @@ func (g *Generator) GenerateMethod(mockType string, m *model.Method, outputPkgPa
 	g.p("func (%v *%v) %v(%v) future.Future[%v] {", receiverName, mockType, m.Name, argString, resultType)
 	g.in()
 	g.p("ctx.UnlockParent()")
-	g.p("ctx = actor.NewContext(%v.lock.Lock, %v.lock.Unlock)", receiverName, receiverName)
+	g.p("newctx := actor.NewContext(%v.lock.Lock, %v.lock.Unlock)", receiverName, receiverName)
 	g.p("")
 	g.p("f := future.New[%v]()", resultType)
 	g.p("go func(){")
@@ -200,9 +200,9 @@ func (g *Generator) GenerateMethod(mockType string, m *model.Method, outputPkgPa
 	g.p("defer %s.lock.Unlock()", receiverName)
 	g.p("")
 	if len(resultVars) > 0 {
-		g.p("%v := %s.internal.%v(%v)", strings.Join(resultVars, ", "), receiverName, m.Name, strings.Join(argNames, ", "))
+		g.p("%v := %s.internal.%v(newctx, %v)", strings.Join(resultVars, ", "), receiverName, m.Name, strings.Join(argNames[1:], ", "))
 	} else {
-		g.p("%s.internal.%v(%v)", receiverName, m.Name, strings.Join(argNames, ", "))
+		g.p("%s.internal.%v(newctx, %v)", receiverName, m.Name, strings.Join(argNames[1:], ", "))
 	}
 	g.p("")
 	g.p("ret := %v{", resultType)
