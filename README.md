@@ -5,12 +5,13 @@ Molizen is a type-safe actor framework for Go.
 This is a POWERFUL WEAPON to defeat "the difficulty of parallel programming" like race conditions and deadlocks.
 
 - [Molizen](#molizen)
-	- [Design](#design)
 	- [Getting Started](#getting-started)
 		- [0. install](#0-install)
 		- [1. generate your Actor from interface](#1-generate-your-actor-from-interface)
 			- [options](#options)
 		- [2. use Actor](#2-use-actor)
+	- [Design](#design)
+		- [Actor reentrancy](#actor-reentrancy)
 	- [What is actor-model?](#what-is-actor-model)
 		- [Differences from CSP](#differences-from-csp)
 		- [Benefits](#benefits)
@@ -22,16 +23,6 @@ This is a POWERFUL WEAPON to defeat "the difficulty of parallel programming" lik
 			- [Sending messages explicitly](#sending-messages-explicitly)
 			- [un-typed message passing](#un-typed-message-passing)
 
-## Design
-
-It is designed with reference to `actor` newly introduced in Swift5.5.
-
-[0306 Actors | apple/swift-evolution](https://github.com/apple/swift-evolution/blob/23405a18e3ebbe69fcb37b0d316aa4ec5a7b6c46/proposals/0306-actors.md)
-
-In Molizen, you can use actors like `struct` and communicate with other actors by its methods.
-This is a big difference from other actor libraries.
-
-This allows you to use the benefits of object-oriented programming while working with actors.
 
 ## Getting Started
 
@@ -136,6 +127,21 @@ future := actor.SetName(ctx, "sanposhiho")
 // get the result from future.
 result := future.Get()
 ```
+
+## Design
+
+It is designed with reference to `actor` newly introduced in Swift5.5.
+
+[0306 Actors | apple/swift-evolution](https://github.com/apple/swift-evolution/blob/23405a18e3ebbe69fcb37b0d316aa4ec5a7b6c46/proposals/0306-actors.md)
+
+In Molizen, you can use actors like `struct` and communicate with other actors by its methods.
+This is a big difference from other actor libraries.
+
+This allows you to use the benefits of object-oriented programming while working with actors.
+
+### Actor reentrancy
+
+**TBD**
 
 ## What is actor-model?
 
