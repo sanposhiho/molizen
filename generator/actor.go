@@ -173,7 +173,7 @@ func (g *Generator) GenerateMethod(mockType string, m *model.Method, outputPkgPa
 	resultVars := make([]string, len(m.Out))
 	for i, p := range m.Out {
 		resultVars[i] = "ret" + strconv.Itoa(i)
-		g.p("%v %v", "ret"+strconv.Itoa(i), p.Type.String(g.packageMap, outputPkgPath))
+		g.p("%v %v", "Ret"+strconv.Itoa(i), p.Type.String(g.packageMap, outputPkgPath))
 		rets[i] = p.Type.String(g.packageMap, outputPkgPath)
 	}
 	g.out()
@@ -191,7 +191,7 @@ func (g *Generator) GenerateMethod(mockType string, m *model.Method, outputPkgPa
 	g.p("func (%v *%v) %v(%v) future.Future[%v] {", receiverName, mockType, m.Name, argString, resultType)
 	g.in()
 	g.p("ctx.UnlockParent()")
-	g.p("newctx := actor.NewContext(%v.lock.Lock, %v.lock.Unlock)", receiverName, receiverName)
+	g.p("newctx := ctx.NewChildContext(a, %v.lock.Lock, %v.lock.Unlock)", receiverName, receiverName)
 	g.p("")
 	g.p("f := future.New[%v]()", resultType)
 	g.p("go func(){")
@@ -208,7 +208,7 @@ func (g *Generator) GenerateMethod(mockType string, m *model.Method, outputPkgPa
 	g.p("ret := %v{", resultType)
 	g.in()
 	for i, _ := range m.Out {
-		g.p("%v: %v,", "ret"+strconv.Itoa(i), "ret"+strconv.Itoa(i))
+		g.p("%v: %v,", "Ret"+strconv.Itoa(i), "ret"+strconv.Itoa(i))
 	}
 	g.out()
 	g.p("}")

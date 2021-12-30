@@ -6,7 +6,7 @@ package actor_user
 import (
 	sync "sync"
 
-	actor "github.com/sanposhiho/molizen/actor"
+	context0 "github.com/sanposhiho/molizen/context"
 	future "github.com/sanposhiho/molizen/future"
 	user "github.com/sanposhiho/molizen/playground/user"
 )
@@ -23,26 +23,78 @@ func New(internal user.User) *UserActor {
 	}
 }
 
-// SetNameResult is the result type for SetName.
-type SetNameResult struct {
-	ret0 string
+// GetAgeResult is the result type for GetAge.
+type GetAgeResult struct {
+	Ret0 int
 }
 
-// SetName actor base method.
-func (a *UserActor) SetName(ctx actor.Context, name string) future.Future[SetNameResult] {
+// GetAge actor base method.
+func (a *UserActor) GetAge(ctx context0.Context) future.Future[GetAgeResult] {
 	ctx.UnlockParent()
-	newctx := actor.NewContext(a.lock.Lock, a.lock.Unlock)
+	newctx := ctx.NewChildContext(a, a.lock.Lock, a.lock.Unlock)
 
-	f := future.New[SetNameResult]()
+	f := future.New[GetAgeResult]()
 	go func() {
 		a.lock.Lock()
 		defer a.lock.Unlock()
 
-		ret0 := a.internal.SetName(newctx, name)
+		ret0 := a.internal.GetAge(newctx)
 
-		ret := SetNameResult{
-			ret0: ret0,
+		ret := GetAgeResult{
+			Ret0: ret0,
 		}
+
+		ctx.LockParent()
+
+		f.Send(ret)
+	}()
+
+	return f
+}
+
+// IncrementAgeResult is the result type for IncrementAge.
+type IncrementAgeResult struct {
+}
+
+// IncrementAge actor base method.
+func (a *UserActor) IncrementAge(ctx context0.Context) future.Future[IncrementAgeResult] {
+	ctx.UnlockParent()
+	newctx := ctx.NewChildContext(a, a.lock.Lock, a.lock.Unlock)
+
+	f := future.New[IncrementAgeResult]()
+	go func() {
+		a.lock.Lock()
+		defer a.lock.Unlock()
+
+		a.internal.IncrementAge(newctx)
+
+		ret := IncrementAgeResult{}
+
+		ctx.LockParent()
+
+		f.Send(ret)
+	}()
+
+	return f
+}
+
+// SetAgeResult is the result type for SetAge.
+type SetAgeResult struct {
+}
+
+// SetAge actor base method.
+func (a *UserActor) SetAge(ctx context0.Context, age int) future.Future[SetAgeResult] {
+	ctx.UnlockParent()
+	newctx := ctx.NewChildContext(a, a.lock.Lock, a.lock.Unlock)
+
+	f := future.New[SetAgeResult]()
+	go func() {
+		a.lock.Lock()
+		defer a.lock.Unlock()
+
+		a.internal.SetAge(newctx, age)
+
+		ret := SetAgeResult{}
 
 		ctx.LockParent()
 
