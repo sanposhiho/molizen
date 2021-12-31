@@ -41,17 +41,12 @@ func (u *User) Name(ctx context.Context) string {
 }
 
 func (u *User) SendPing(ctx context.Context, to *actor_user.UserActor) {
-	fmt.Println("== send ping ==")
-
 	future := to.Ping(ctx, u.self)
 
 	future.Get()
 }
 
 func (u *User) Ping(ctx context.Context, from *actor_user.UserActor) {
-	fmt.Println("== ping==")
-
-	fmt.Println("== try name ==")
 	future := from.Name(ctx)
 
 	name := future.Get().Ret0
