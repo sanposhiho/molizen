@@ -78,7 +78,7 @@ func main() {
 	}
 
 	if err := g.Generate(pkg, outputPackageName, outputPackagePath); err != nil {
-		log.Fatalf("Failed generating mock: %v", err)
+		log.Fatalf("Failed generating actor: %v", err)
 	}
 
 	if _, err := dst.Write(g.Output()); err != nil {
