@@ -85,7 +85,7 @@ func main() {
 You can run this code by using [/playground/scenarios/scenario0/main.go](/playground/scenarios/scenario0/main.go).
 (See how to run scenarios in [/playground/scenarios/README.md](/playground/scenarios/README.md))
 
-Some examples of its use can be found [here](/playground/scenarios).
+Some other examples of its use can be found [here](/playground/scenarios).
 
 ## Design
 
