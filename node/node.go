@@ -15,5 +15,5 @@ func NewNode() *Node {
 }
 
 func (n *Node) NewContext() context.Context {
-	return context.Context{}
+	return context.NewEmptyContext()
 }
