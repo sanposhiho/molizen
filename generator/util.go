@@ -1,10 +1,7 @@
 package generator
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
-	"os/exec"
 	"strings"
 	"unicode"
 
@@ -75,31 +72,4 @@ func makeArgString(argNames, argTypes []string) string {
 		}
 	}
 	return strings.Join(args, ", ")
-}
-
-// createPackageMap returns a map of import path to package name
-// for specified importPaths.
-func createPackageMap(importPaths []string) (map[string]string, error) {
-	var pkg struct {
-		Name       string
-		ImportPath string
-	}
-	pkgMap := make(map[string]string)
-	b := bytes.NewBuffer(nil)
-	args := []string{"list", "-json"}
-	args = append(args, importPaths...)
-	cmd := exec.Command("go", args...)
-	cmd.Stdout = b
-	if err := cmd.Run(); err != nil {
-		return nil, fmt.Errorf("run `go list -json`: %w", err)
-	}
-	dec := json.NewDecoder(b)
-	for dec.More() {
-		err := dec.Decode(&pkg)
-		if err != nil {
-			return nil, fmt.Errorf("decode `go list -json` output: %w", err)
-		}
-		pkgMap[pkg.ImportPath] = pkg.Name
-	}
-	return pkgMap, nil
 }

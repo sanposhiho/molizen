@@ -8,6 +8,8 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/sanposhiho/mock/mockgen/util"
+
 	"github.com/sanposhiho/mock/mockgen/model"
 )
 
@@ -27,8 +29,9 @@ func (g *Generator) Generate(pkg *model.Package, outputPkgName string, outputPkg
 		originalName := intf.Name
 		actorName := intf.Name + "Actor"
 
-		g.GenerateActorStruct(actorName, originalName, pkg.Name)
-		g.GenerateNewFunction(actorName, originalName, pkg.Name)
+		g.GenerateActorStruct(actorName, originalName)
+		g.GenerateOriginalInterface(intf, outputPkgPath)
+		g.GenerateNewFunction(actorName, originalName)
 		g.GenerateMockMethods(actorName, intf, outputPkgPath)
 	}
 
@@ -57,7 +60,6 @@ func (g *Generator) GenerateImport(pkg *model.Package, outputPkgName string, out
 	im[molizenActorImportPath] = true
 	im[molizenFutureImportPath] = true
 	im["sync"] = true
-	im["context"] = true
 
 	// Sort keys to make import alias generation predictable
 	sortedPaths := make([]string, len(im))
@@ -68,10 +70,7 @@ func (g *Generator) GenerateImport(pkg *model.Package, outputPkgName string, out
 	}
 	sort.Strings(sortedPaths)
 
-	packagesName, err := createPackageMap(sortedPaths)
-	if err != nil {
-		return fmt.Errorf("create package map: %w", err)
-	}
+	packagesName := util.CreatePackageMap(sortedPaths)
 
 	g.packageMap = make(map[string]string, len(im))
 	localNames := make(map[string]bool, len(im))
@@ -123,13 +122,38 @@ func (g *Generator) GenerateImport(pkg *model.Package, outputPkgName string, out
 	return nil
 }
 
-func (g *Generator) GenerateActorStruct(actorName, originalName, originalPkgName string) {
+func (g *Generator) GenerateActorStruct(actorName, originalName string) {
 	g.p("")
 	g.p("// %v is a actor of %v interface.", actorName, originalName)
 	g.p("type %v struct {", actorName)
 	g.in()
 	g.p("lock     sync.Mutex")
-	g.p("internal %v.%v", originalPkgName, originalName)
+	g.p("internal %v", originalName)
+	g.out()
+	g.p("}")
+	g.p("")
+}
+
+func (g *Generator) GenerateOriginalInterface(intf *model.Interface, outputPkgPath string) {
+	g.p("type %v interface {", intf.Name)
+	g.in()
+	for _, m := range intf.Methods {
+		argNames := g.getArgNames(m)
+		argString := makeArgString(argNames, g.getArgTypes(m, outputPkgPath))
+		rets := make([]string, len(m.Out))
+		for i, p := range m.Out {
+			rets[i] = p.Type.String(g.packageMap, outputPkgPath)
+		}
+		retString := strings.Join(rets, ", ")
+		if len(rets) > 1 {
+			retString = "(" + retString + ")"
+		}
+		if retString != "" {
+			retString = " " + retString
+		}
+
+		g.p("%v(%v) %v", m.Name, argString, retString)
+	}
 	g.out()
 	g.p("}")
 	g.p("")
@@ -145,9 +169,9 @@ func (g *Generator) GenerateMockMethods(mockType string, intf *model.Interface, 
 	}
 }
 
-func (g *Generator) GenerateNewFunction(actorName, originalName, originalPkgName string) {
+func (g *Generator) GenerateNewFunction(actorName, originalName string) {
 	g.p("")
-	g.p("func New(internal %v.%v) *%v {", originalPkgName, originalName, actorName)
+	g.p("func New(internal %v) *%v {", originalName, actorName)
 	g.in()
 	g.p("return &%v{", actorName)
 	g.p("internal: internal,")
