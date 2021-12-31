@@ -10,5 +10,5 @@ func NewActorSystem() *ActorSystem {
 	return &ActorSystem{}
 }
 
-func (s *ActorSystem) RegisterActor(actor actor.Actor, parent actor.Actor) {
+func (s *ActorSystem) RegisterActor(actor actor.Actor, sender actor.Actor) {
 }

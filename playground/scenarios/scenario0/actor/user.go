@@ -34,7 +34,7 @@ type GetAgeResult struct {
 
 // GetAge actor base method.
 func (a *UserActor) GetAge(ctx context.Context) *future.Future[GetAgeResult] {
-	ctx.UnlockParent()
+	ctx.UnlockSender()
 	newctx := ctx.NewChildContext(a, a.lock.Lock, a.lock.Unlock)
 
 	f := future.New[GetAgeResult]()
@@ -48,7 +48,7 @@ func (a *UserActor) GetAge(ctx context.Context) *future.Future[GetAgeResult] {
 			Ret0: ret0,
 		}
 
-		ctx.LockParent()
+		ctx.LockSender()
 
 		f.Send(ret)
 	}()
@@ -62,7 +62,7 @@ type SetAgeResult struct {
 
 // SetAge actor base method.
 func (a *UserActor) SetAge(ctx context.Context, age int) *future.Future[SetAgeResult] {
-	ctx.UnlockParent()
+	ctx.UnlockSender()
 	newctx := ctx.NewChildContext(a, a.lock.Lock, a.lock.Unlock)
 
 	f := future.New[SetAgeResult]()
@@ -74,7 +74,7 @@ func (a *UserActor) SetAge(ctx context.Context, age int) *future.Future[SetAgeRe
 
 		ret := SetAgeResult{}
 
-		ctx.LockParent()
+		ctx.LockSender()
 
 		f.Send(ret)
 	}()

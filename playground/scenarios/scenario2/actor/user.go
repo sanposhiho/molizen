@@ -37,7 +37,7 @@ type NameResult struct {
 
 // Name actor base method.
 func (a *UserActor) Name(ctx context.Context) *future.Future[NameResult] {
-	ctx.UnlockParent()
+	ctx.UnlockSender()
 	newctx := ctx.NewChildContext(a, a.lock.Lock, a.lock.Unlock)
 
 	f := future.New[NameResult]()
@@ -51,7 +51,7 @@ func (a *UserActor) Name(ctx context.Context) *future.Future[NameResult] {
 			Ret0: ret0,
 		}
 
-		ctx.LockParent()
+		ctx.LockSender()
 
 		f.Send(ret)
 	}()
@@ -65,7 +65,7 @@ type PingResult struct {
 
 // Ping actor base method.
 func (a *UserActor) Ping(ctx context.Context, from *UserActor) *future.Future[PingResult] {
-	ctx.UnlockParent()
+	ctx.UnlockSender()
 	newctx := ctx.NewChildContext(a, a.lock.Lock, a.lock.Unlock)
 
 	f := future.New[PingResult]()
@@ -77,7 +77,7 @@ func (a *UserActor) Ping(ctx context.Context, from *UserActor) *future.Future[Pi
 
 		ret := PingResult{}
 
-		ctx.LockParent()
+		ctx.LockSender()
 
 		f.Send(ret)
 	}()
@@ -91,7 +91,7 @@ type PongResult struct {
 
 // Pong actor base method.
 func (a *UserActor) Pong(ctx context.Context) *future.Future[PongResult] {
-	ctx.UnlockParent()
+	ctx.UnlockSender()
 	newctx := ctx.NewChildContext(a, a.lock.Lock, a.lock.Unlock)
 
 	f := future.New[PongResult]()
@@ -103,7 +103,7 @@ func (a *UserActor) Pong(ctx context.Context) *future.Future[PongResult] {
 
 		ret := PongResult{}
 
-		ctx.LockParent()
+		ctx.LockSender()
 
 		f.Send(ret)
 	}()
@@ -117,7 +117,7 @@ type SendPingResult struct {
 
 // SendPing actor base method.
 func (a *UserActor) SendPing(ctx context.Context, to *UserActor) *future.Future[SendPingResult] {
-	ctx.UnlockParent()
+	ctx.UnlockSender()
 	newctx := ctx.NewChildContext(a, a.lock.Lock, a.lock.Unlock)
 
 	f := future.New[SendPingResult]()
@@ -129,7 +129,7 @@ func (a *UserActor) SendPing(ctx context.Context, to *UserActor) *future.Future[
 
 		ret := SendPingResult{}
 
-		ctx.LockParent()
+		ctx.LockSender()
 
 		f.Send(ret)
 	}()
@@ -143,7 +143,7 @@ type SetSelfResult struct {
 
 // SetSelf actor base method.
 func (a *UserActor) SetSelf(ctx context.Context, self *UserActor) *future.Future[SetSelfResult] {
-	ctx.UnlockParent()
+	ctx.UnlockSender()
 	newctx := ctx.NewChildContext(a, a.lock.Lock, a.lock.Unlock)
 
 	f := future.New[SetSelfResult]()
@@ -155,7 +155,7 @@ func (a *UserActor) SetSelf(ctx context.Context, self *UserActor) *future.Future
 
 		ret := SetSelfResult{}
 
-		ctx.LockParent()
+		ctx.LockSender()
 
 		f.Send(ret)
 	}()

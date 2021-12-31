@@ -11,28 +11,28 @@ import (
 type Context interface {
 	NewChildContext(
 		actor actor.Actor,
-		locker parentActorLocker,
-		unlocker parentActorUnlocker,
+		locker senderActorLocker,
+		unlocker senderActorUnlocker,
 	) *context
-	UnlockParent()
-	LockParent()
+	UnlockSender()
+	LockSender()
 }
 
 type context struct {
 	mu     sync.Mutex
 	system *system.ActorSystem
-	parent *parent
+	sender *sender
 }
 
-type parent struct {
+type sender struct {
 	actor        actor.Actor
-	locker       parentActorLocker
-	unlocker     parentActorUnlocker
+	locker       senderActorLocker
+	unlocker     senderActorUnlocker
 	isLockedByUs bool
 }
 
-type parentActorLocker func()
-type parentActorUnlocker func()
+type senderActorLocker func()
+type senderActorUnlocker func()
 
 func NewEmptyContext() *context {
 	return &context{}
@@ -40,14 +40,14 @@ func NewEmptyContext() *context {
 
 func (c *context) NewChildContext(
 	actor actor.Actor,
-	locker parentActorLocker,
-	unlocker parentActorUnlocker,
+	locker senderActorLocker,
+	unlocker senderActorUnlocker,
 ) *context {
-	c.system.RegisterActor(actor, c.parent)
+	c.system.RegisterActor(actor, c.sender)
 
 	return &context{
 		system: c.system,
-		parent: &parent{
+		sender: &sender{
 			locker:       locker,
 			unlocker:     unlocker,
 			isLockedByUs: true,
@@ -55,36 +55,36 @@ func (c *context) NewChildContext(
 	}
 }
 
-func (c *context) UnlockParent() {
-	if !c.hasParent() {
+func (c *context) UnlockSender() {
+	if !c.hasSender() {
 		return
 	}
 
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
-	if c.parent.isLockedByUs {
-		c.parent.unlocker()
-		c.parent.isLockedByUs = false
+	if c.sender.isLockedByUs {
+		c.sender.unlocker()
+		c.sender.isLockedByUs = false
 		return
 	}
 }
 
-func (c *context) LockParent() {
-	if !c.hasParent() {
+func (c *context) LockSender() {
+	if !c.hasSender() {
 		return
 	}
 
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
-	if !c.parent.isLockedByUs {
-		c.parent.locker()
-		c.parent.isLockedByUs = true
+	if !c.sender.isLockedByUs {
+		c.sender.locker()
+		c.sender.isLockedByUs = true
 		return
 	}
 }
 
-func (c *context) hasParent() bool {
-	return c.parent != nil
+func (c *context) hasSender() bool {
+	return c.sender != nil
 }
