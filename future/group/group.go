@@ -31,10 +31,11 @@ var ErrNotFound = errors.New("future is not found")
 func (f FutureGroup[T]) Get(key string) (T, error) {
 	fu, ok := f.futures[key]
 	if !ok {
-		return T{}, fmt.Errorf("get a future, key: %v, err: %w", key, ErrNotFound)
+		var t T
+		return t, fmt.Errorf("get a future, key: %v, err: %w", key, ErrNotFound)
 	}
 
-	return f.futures[key].Get()
+	return fu.Get(), nil
 }
 
 func (f FutureGroup[T]) Wait() {
