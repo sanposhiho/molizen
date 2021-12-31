@@ -6,18 +6,24 @@ package actor_user
 import (
 	sync "sync"
 
-	context0 "github.com/sanposhiho/molizen/context"
+	context "github.com/sanposhiho/molizen/context"
 	future "github.com/sanposhiho/molizen/future"
-	user "github.com/sanposhiho/molizen/playground/scenarios/scenario1/user"
 )
 
 // UserActor is a actor of User interface.
 type UserActor struct {
 	lock     sync.Mutex
-	internal user.User
+	internal User
 }
 
-func New(internal user.User) *UserActor {
+type User interface {
+	SetAge(ctx context.Context, age int)
+	IncrementAge(ctx context.Context)
+	GetAge(ctx context.Context) int
+	Say(ctx context.Context, msg string)
+}
+
+func New(internal User) *UserActor {
 	return &UserActor{
 		internal: internal,
 	}
@@ -29,7 +35,7 @@ type GetAgeResult struct {
 }
 
 // GetAge actor base method.
-func (a *UserActor) GetAge(ctx context0.Context) *future.Future[GetAgeResult] {
+func (a *UserActor) GetAge(ctx context.Context) *future.Future[GetAgeResult] {
 	ctx.UnlockParent()
 	newctx := ctx.NewChildContext(a, a.lock.Lock, a.lock.Unlock)
 
@@ -57,7 +63,7 @@ type IncrementAgeResult struct {
 }
 
 // IncrementAge actor base method.
-func (a *UserActor) IncrementAge(ctx context0.Context) *future.Future[IncrementAgeResult] {
+func (a *UserActor) IncrementAge(ctx context.Context) *future.Future[IncrementAgeResult] {
 	ctx.UnlockParent()
 	newctx := ctx.NewChildContext(a, a.lock.Lock, a.lock.Unlock)
 
@@ -83,7 +89,7 @@ type SayResult struct {
 }
 
 // Say actor base method.
-func (a *UserActor) Say(ctx context0.Context, msg string) *future.Future[SayResult] {
+func (a *UserActor) Say(ctx context.Context, msg string) *future.Future[SayResult] {
 	ctx.UnlockParent()
 	newctx := ctx.NewChildContext(a, a.lock.Lock, a.lock.Unlock)
 
@@ -109,7 +115,7 @@ type SetAgeResult struct {
 }
 
 // SetAge actor base method.
-func (a *UserActor) SetAge(ctx context0.Context, age int) *future.Future[SetAgeResult] {
+func (a *UserActor) SetAge(ctx context.Context, age int) *future.Future[SetAgeResult] {
 	ctx.UnlockParent()
 	newctx := ctx.NewChildContext(a, a.lock.Lock, a.lock.Unlock)
 
