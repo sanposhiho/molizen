@@ -20,7 +20,6 @@ type User interface {
 	SetAge(ctx context.Context, age int)
 	IncrementAge(ctx context.Context)
 	GetAge(ctx context.Context) int
-	Say(ctx context.Context, msg string)
 }
 
 func New(internal User) *UserActor {
@@ -75,32 +74,6 @@ func (a *UserActor) IncrementAge(ctx context.Context) *future.Future[IncrementAg
 		a.internal.IncrementAge(newctx)
 
 		ret := IncrementAgeResult{}
-
-		ctx.LockSender()
-
-		f.Send(ret)
-	}()
-
-	return f
-}
-
-// SayResult is the result type for Say.
-type SayResult struct {
-}
-
-// Say actor base method.
-func (a *UserActor) Say(ctx context.Context, msg string) *future.Future[SayResult] {
-	ctx.UnlockSender()
-	newctx := ctx.NewChildContext(a, a.lock.Lock, a.lock.Unlock)
-
-	f := future.New[SayResult]()
-	go func() {
-		a.lock.Lock()
-		defer a.lock.Unlock()
-
-		a.internal.Say(newctx, msg)
-
-		ret := SayResult{}
 
 		ctx.LockSender()
 
