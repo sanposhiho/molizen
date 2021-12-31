@@ -258,11 +258,11 @@ func main() {
 	pid := context.Spawn(props)
 	
 	// correct message -- HelloActor can handle Hello message.
-	context.Send(pid, Hello{Who: "Roger"})
-
-    // incorrect message -- HelloActor cannot handle HelloV2 message.
-    context.Send(pid, HelloV2{Who: "Roger"})
+	context.Send(pid, Hello{Who: "Roger"}) 
 	
+	// incorrect message -- HelloActor cannot handle HelloV2 message.
+	context.Send(pid, HelloV2{Who: "Roger"})
+
 	time.Sleep(1 * time.Second)
 }
 ```
