@@ -8,7 +8,17 @@ import (
 	"github.com/sanposhiho/molizen/actor"
 )
 
-type Context struct {
+type Context interface {
+	NewChildContext(
+		actor actor.Actor,
+		locker parentActorLocker,
+		unlocker parentActorUnlocker,
+	) *context
+	UnlockParent()
+	LockParent()
+}
+
+type context struct {
 	mu     sync.Mutex
 	system *system.ActorSystem
 	parent *parent
@@ -24,14 +34,19 @@ type parent struct {
 type parentActorLocker func()
 type parentActorUnlocker func()
 
-func (c *Context) NewChildContext(
+func NewEmptyContext() *context {
+	return &context{}
+}
+
+func (c *context) NewChildContext(
 	actor actor.Actor,
 	locker parentActorLocker,
 	unlocker parentActorUnlocker,
-) Context {
+) *context {
 	c.system.RegisterActor(actor, c.parent)
 
-	return Context{
+	return &context{
+		system: c.system,
 		parent: &parent{
 			locker:       locker,
 			unlocker:     unlocker,
@@ -40,13 +55,11 @@ func (c *Context) NewChildContext(
 	}
 }
 
-func (c *Context) UnlockParent() {
+func (c *context) UnlockParent() {
 	if !c.hasParent() {
 		return
 	}
 
-	c.mu.Lock()
-	defer c.mu.Unlock()
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
@@ -57,7 +70,7 @@ func (c *Context) UnlockParent() {
 	}
 }
 
-func (c *Context) LockParent() {
+func (c *context) LockParent() {
 	if !c.hasParent() {
 		return
 	}
@@ -65,13 +78,13 @@ func (c *Context) LockParent() {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
-	if c.parent.isLockedByUs {
+	if !c.parent.isLockedByUs {
 		c.parent.locker()
 		c.parent.isLockedByUs = true
 		return
 	}
 }
 
-func (c *Context) hasParent() bool {
+func (c *context) hasParent() bool {
 	return c.parent != nil
 }
