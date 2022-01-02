@@ -3,7 +3,7 @@ package context
 import (
 	"sync"
 
-	"github.com/sanposhiho/molizen/system"
+	"github.com/sanposhiho/molizen/actorlet"
 
 	"github.com/sanposhiho/molizen/actor"
 )
@@ -20,7 +20,7 @@ type Context interface {
 
 type context struct {
 	mu     sync.Mutex
-	system *system.ActorSystem
+	system *actorlet.ActorLet
 	sender *sender
 }
 
