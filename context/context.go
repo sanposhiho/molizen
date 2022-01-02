@@ -3,6 +3,8 @@ package context
 import (
 	"sync"
 
+	"github.com/sanposhiho/molizen/actorrepo"
+
 	"github.com/sanposhiho/molizen/actorlet"
 
 	"github.com/sanposhiho/molizen/actor"
@@ -20,7 +22,8 @@ type Context interface {
 
 type context struct {
 	mu     sync.Mutex
-	system *actorlet.ActorLet
+	let    *actorlet.ActorLet
+	repo   actorrepo.ActorRepo
 	sender *sender
 }
 
@@ -34,8 +37,11 @@ type sender struct {
 type senderActorLocker func()
 type senderActorUnlocker func()
 
-func NewEmptyContext() *context {
-	return &context{}
+func NewInitialContext(let *actorlet.ActorLet, repo actorrepo.ActorRepo) *context {
+	return &context{
+		let:  let,
+		repo: repo,
+	}
 }
 
 func (c *context) NewChildContext(
@@ -43,10 +49,14 @@ func (c *context) NewChildContext(
 	locker senderActorLocker,
 	unlocker senderActorUnlocker,
 ) *context {
-	c.system.RegisterActor(actor, c.sender)
+
+	// TODO: register actor to repo
+	// if err := c.repo.Create(actor); err != nil {
+	// }
 
 	return &context{
-		system: c.system,
+		let:  c.let,
+		repo: c.repo,
 		sender: &sender{
 			locker:       locker,
 			unlocker:     unlocker,
