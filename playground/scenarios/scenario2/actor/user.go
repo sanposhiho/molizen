@@ -37,10 +37,9 @@ type NameResult struct {
 
 // Name actor base method.
 func (a *UserActor) Name(ctx context.Context) *future.Future[NameResult] {
-	ctx.UnlockSender()
 	newctx := ctx.NewChildContext(a, a.lock.Lock, a.lock.Unlock)
 
-	f := future.New[NameResult]()
+	f := future.New[NameResult](ctx.SenderLocker(), ctx.SenderUnlocker())
 	go func() {
 		a.lock.Lock()
 		defer a.lock.Unlock()
@@ -50,8 +49,6 @@ func (a *UserActor) Name(ctx context.Context) *future.Future[NameResult] {
 		ret := NameResult{
 			Ret0: ret0,
 		}
-
-		ctx.LockSender()
 
 		f.Send(ret)
 	}()
@@ -65,10 +62,9 @@ type PingResult struct {
 
 // Ping actor base method.
 func (a *UserActor) Ping(ctx context.Context, from *UserActor) *future.Future[PingResult] {
-	ctx.UnlockSender()
 	newctx := ctx.NewChildContext(a, a.lock.Lock, a.lock.Unlock)
 
-	f := future.New[PingResult]()
+	f := future.New[PingResult](ctx.SenderLocker(), ctx.SenderUnlocker())
 	go func() {
 		a.lock.Lock()
 		defer a.lock.Unlock()
@@ -76,8 +72,6 @@ func (a *UserActor) Ping(ctx context.Context, from *UserActor) *future.Future[Pi
 		a.internal.Ping(newctx, from)
 
 		ret := PingResult{}
-
-		ctx.LockSender()
 
 		f.Send(ret)
 	}()
@@ -91,10 +85,9 @@ type PongResult struct {
 
 // Pong actor base method.
 func (a *UserActor) Pong(ctx context.Context) *future.Future[PongResult] {
-	ctx.UnlockSender()
 	newctx := ctx.NewChildContext(a, a.lock.Lock, a.lock.Unlock)
 
-	f := future.New[PongResult]()
+	f := future.New[PongResult](ctx.SenderLocker(), ctx.SenderUnlocker())
 	go func() {
 		a.lock.Lock()
 		defer a.lock.Unlock()
@@ -102,8 +95,6 @@ func (a *UserActor) Pong(ctx context.Context) *future.Future[PongResult] {
 		a.internal.Pong(newctx)
 
 		ret := PongResult{}
-
-		ctx.LockSender()
 
 		f.Send(ret)
 	}()
@@ -117,10 +108,9 @@ type SendPingResult struct {
 
 // SendPing actor base method.
 func (a *UserActor) SendPing(ctx context.Context, to *UserActor) *future.Future[SendPingResult] {
-	ctx.UnlockSender()
 	newctx := ctx.NewChildContext(a, a.lock.Lock, a.lock.Unlock)
 
-	f := future.New[SendPingResult]()
+	f := future.New[SendPingResult](ctx.SenderLocker(), ctx.SenderUnlocker())
 	go func() {
 		a.lock.Lock()
 		defer a.lock.Unlock()
@@ -128,8 +118,6 @@ func (a *UserActor) SendPing(ctx context.Context, to *UserActor) *future.Future[
 		a.internal.SendPing(newctx, to)
 
 		ret := SendPingResult{}
-
-		ctx.LockSender()
 
 		f.Send(ret)
 	}()
@@ -143,10 +131,9 @@ type SetSelfResult struct {
 
 // SetSelf actor base method.
 func (a *UserActor) SetSelf(ctx context.Context, self *UserActor) *future.Future[SetSelfResult] {
-	ctx.UnlockSender()
 	newctx := ctx.NewChildContext(a, a.lock.Lock, a.lock.Unlock)
 
-	f := future.New[SetSelfResult]()
+	f := future.New[SetSelfResult](ctx.SenderLocker(), ctx.SenderUnlocker())
 	go func() {
 		a.lock.Lock()
 		defer a.lock.Unlock()
@@ -154,8 +141,6 @@ func (a *UserActor) SetSelf(ctx context.Context, self *UserActor) *future.Future
 		a.internal.SetSelf(newctx, self)
 
 		ret := SetSelfResult{}
-
-		ctx.LockSender()
 
 		f.Send(ret)
 	}()
