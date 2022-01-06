@@ -13,11 +13,11 @@ import (
 type Context interface {
 	NewChildContext(
 		actor actor.Actor,
-		locker senderActorLocker,
-		unlocker senderActorUnlocker,
+		locker func(),
+		unlocker func(),
 	) *context
-	UnlockSender()
-	LockSender()
+	SenderLocker() func()
+	SenderUnlocker() func()
 }
 
 type context struct {
@@ -28,26 +28,23 @@ type context struct {
 }
 
 type sender struct {
-	actor        actor.Actor
-	locker       senderActorLocker
-	unlocker     senderActorUnlocker
-	isLockedByUs bool
+	actor    actor.Actor
+	locker   func()
+	unlocker func()
 }
-
-type senderActorLocker func()
-type senderActorUnlocker func()
 
 func NewInitialContext(let *actorlet.ActorLet, repo actorrepo.ActorRepo) *context {
 	return &context{
-		let:  let,
-		repo: repo,
+		let:    let,
+		repo:   repo,
+		sender: &sender{},
 	}
 }
 
 func (c *context) NewChildContext(
 	actor actor.Actor,
-	locker senderActorLocker,
-	unlocker senderActorUnlocker,
+	locker func(),
+	unlocker func(),
 ) *context {
 
 	// TODO: register actor to repo
@@ -58,43 +55,16 @@ func (c *context) NewChildContext(
 		let:  c.let,
 		repo: c.repo,
 		sender: &sender{
-			locker:       locker,
-			unlocker:     unlocker,
-			isLockedByUs: true,
+			locker:   locker,
+			unlocker: unlocker,
 		},
 	}
 }
 
-func (c *context) UnlockSender() {
-	if !c.hasSender() {
-		return
-	}
-
-	c.mu.Lock()
-	defer c.mu.Unlock()
-
-	if c.sender.isLockedByUs {
-		c.sender.unlocker()
-		c.sender.isLockedByUs = false
-		return
-	}
+func (c *context) SenderLocker() func() {
+	return c.sender.locker
 }
 
-func (c *context) LockSender() {
-	if !c.hasSender() {
-		return
-	}
-
-	c.mu.Lock()
-	defer c.mu.Unlock()
-
-	if !c.sender.isLockedByUs {
-		c.sender.locker()
-		c.sender.isLockedByUs = true
-		return
-	}
-}
-
-func (c *context) hasSender() bool {
-	return c.sender != nil
+func (c *context) SenderUnlocker() func() {
+	return c.sender.unlocker
 }

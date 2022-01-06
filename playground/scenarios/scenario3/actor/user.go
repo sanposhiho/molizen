@@ -32,10 +32,9 @@ type SayResult struct {
 
 // Say actor base method.
 func (a *UserActor) Say(ctx context.Context, msg string) *future.Future[SayResult] {
-	ctx.UnlockSender()
 	newctx := ctx.NewChildContext(a, a.lock.Lock, a.lock.Unlock)
 
-	f := future.New[SayResult]()
+	f := future.New[SayResult](ctx.SenderLocker(), ctx.SenderUnlocker())
 	go func() {
 		a.lock.Lock()
 		defer a.lock.Unlock()
@@ -43,8 +42,6 @@ func (a *UserActor) Say(ctx context.Context, msg string) *future.Future[SayResul
 		a.internal.Say(newctx, msg)
 
 		ret := SayResult{}
-
-		ctx.LockSender()
 
 		f.Send(ret)
 	}()
