@@ -41,12 +41,22 @@ func (f *Future[T]) Send(val T) {
 
 func (f *Future[T]) Get() T {
 	if f.result == nil {
-		f.unlockSender()
-		result := <-f.ch
+		result := f.get()
 		f.result = &result
 	}
 	f.lockSender()
 	return *f.result
+}
+
+func (f *Future[T]) get() T {
+	for  {
+		select {
+		case result := <-f.ch:
+			return result
+		default:
+			f.unlockSender()
+		}
+	}
 }
 
 func (f *Future[T]) unlockSender() {
