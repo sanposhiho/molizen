@@ -44,7 +44,6 @@ func (f *Future[T]) Get() T {
 		result := f.get()
 		f.result = &result
 	}
-	f.lockSender()
 	return *f.result
 }
 
@@ -52,6 +51,7 @@ func (f *Future[T]) get() T {
 	for  {
 		select {
 		case result := <-f.ch:
+			f.lockSender()
 			return result
 		default:
 			f.unlockSender()
