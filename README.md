@@ -1,8 +1,8 @@
 # Molizen
 
-**not production-ready**
+**Molizen is not production-ready**
 
-Molizen is a typed actor framework for Go. 
+Molizen is a typed actor framework for Go.
 
 This is a POWERFUL WEAPON to defeat "the difficulty of parallel programming" like race conditions and deadlocks.
 
@@ -29,7 +29,7 @@ This is a POWERFUL WEAPON to defeat "the difficulty of parallel programming" lik
 
 ## Getting Started
 
-Molizen requires Go 1.18+. 
+Molizen requires Go 1.18+.
 
 ### 0. install
 
@@ -59,7 +59,7 @@ For example, when you pass this `User` interface.
 
 **TBD**
 
-### 2. use Actor 
+### 2. use Actor
 
 You can use generated `UserActor` like this.
 
@@ -67,7 +67,8 @@ You can use generated `UserActor` like this.
 func main() {
 	node := node.NewNode()
 	ctx := node.NewContext()
-	actor := actor_user.New(&User{})
+	actorFuture := actor_user.New(ctx, &User{})
+	actor := actorFuture.Get()
 
 	// request actor to set age 1.
 	future := actor.SetAge(ctx, 1)
@@ -133,7 +134,7 @@ Even if you've been careful, you've probably encountered deadlocks and race cond
 Why? -- This is because any tools cannot find your race conditions and deadlocks completely.
 You all have to avoid race conditions and deadlocks by yourself and no one doesn't support you.
 
-As applications become more complex and multiple locks work in concert, 
+As applications become more complex and multiple locks work in concert,
 the level of difficulty becomes higher and higher.
 
 Molizen is a powerful weapon and will help you to beat deadlocks and race conditions.
@@ -143,7 +144,7 @@ Let's change this hard game to an easier one with Molizen.
 
 Yeah, maybe right now you're saying, "Go language has `-race` option to detect data race, doesn't it?"
 
-`-race` option is awesome. 
+`-race` option is awesome.
 But, this is a tool that discovers race conditions at runtime, doesn't check all the code and find them.
 
 > To start, run your tests using the race detector (go test -race).
@@ -170,22 +171,22 @@ Let's look at the differences between Molizen and protoactor-go.
 
 The way of communication between actors is very different between Molizen and protoactor-go.
 
-In protoactor-go, you send messages to actors with `context.Send`. 
+In protoactor-go, you send messages to actors with `context.Send`.
 
-This is simple and easy to understand for those who are familiar with the Actor Model and are used to programming with it. 
+This is simple and easy to understand for those who are familiar with the Actor Model and are used to programming with it.
 
-In Molizen, users does not directly send messages. 
+In Molizen, users does not directly send messages.
 
-Communication between actors is done through method calls. Users can benefit from actor-model in a similar way to programming with normal struct. 
+Communication between actors is done through method calls. Users can benefit from actor-model in a similar way to programming with normal struct.
 
 This is easy to understand for users who are familiar with object-oriented programming.
-It also gives you all the benefits of object-oriented programming 
+It also gives you all the benefits of object-oriented programming
 -- use an abstraction by `interface`, libraries for mocking, or etc.
 
 
 #### un-typed message passing
 
-protoactor-go doesn't support typed message passing. 
+protoactor-go doesn't support typed message passing.
 You need to convert message one by one in actors.
 
 One big problem is that you can send wrong type messages to actors.
@@ -222,7 +223,6 @@ func main() {
 
 This code passes compiling because any type of message can be sent.
 You can't notice that You are sending the wrong message(`HelloV2`) at compile time.
-
 
 ### ergo-services/ergo
 
