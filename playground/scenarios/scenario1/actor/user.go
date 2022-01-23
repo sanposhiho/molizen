@@ -22,10 +22,16 @@ type User interface {
 	GetAge(ctx context.Context) int
 }
 
-func New(internal User) *UserActor {
-	return &UserActor{
-		internal: internal,
-	}
+func New(ctx context.Context, internal User) *future.Future[UserActor] {
+	f := future.New[UserActor](ctx.SenderLocker(), ctx.SenderUnlocker())
+	go func() {
+		actor := UserActor{
+			internal: internal,
+		}
+		f.Send(actor)
+	}()
+
+	return f
 }
 
 // GetAgeResult is the result type for GetAge.
