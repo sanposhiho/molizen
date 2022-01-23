@@ -15,7 +15,8 @@ import (
 func main() {
 	node := node.NewNode()
 	ctx := node.NewContext()
-	actor := actor_user.New(&User{})
+	actorFuture := actor_user.New(ctx, &User{})
+	actor := actorFuture.Get()
 
 	g := group.NewFutureGroup[actor_user.SayResult]()
 	for i := 0; i < 100; i++ {

@@ -24,10 +24,16 @@ type User interface {
 	SetSelf(ctx context.Context, self *UserActor)
 }
 
-func New(internal User) *UserActor {
-	return &UserActor{
-		internal: internal,
-	}
+func New(ctx context.Context, internal User) *future.Future[UserActor] {
+	f := future.New[UserActor](ctx.SenderLocker(), ctx.SenderUnlocker())
+	go func() {
+		actor := UserActor{
+			internal: internal,
+		}
+		f.Send(actor)
+	}()
+
+	return f
 }
 
 // NameResult is the result type for Name.

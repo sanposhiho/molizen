@@ -43,7 +43,9 @@ func nonactormain() {
 func actormain() {
 	node := node.NewNode()
 	ctx := node.NewContext()
-	actor := actor_user.New(&User{})
+	actorFuture := actor_user.New(ctx, &User{})
+	actor := actorFuture.Get()
+
 	future := actor.SetAge(ctx, 0)
 	// wait to set age
 	future.Get()

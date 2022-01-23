@@ -13,7 +13,8 @@ import (
 func main() {
 	node := node.NewNode()
 	ctx := node.NewContext()
-	actor := actor_user.New(&User{})
+	actorFuture := actor_user.New(ctx, &User{})
+	actor := actorFuture.Get()
 
 	// request actor to set age 1.
 	future := actor.SetAge(ctx, 1)

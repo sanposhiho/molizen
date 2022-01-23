@@ -13,15 +13,17 @@ import (
 func main() {
 	node := node.NewNode()
 	ctx := node.NewContext()
-	actor := actor_user.New(&User{name: "taro"})
-	actor2 := actor_user.New(&User{name: "hanako"})
+	actorFuture := actor_user.New(ctx, &User{name: "taro"})
+	actor2Future := actor_user.New(ctx, &User{name: "hanako"})
+	actor := actorFuture.Get()
+	actor2 := actor2Future.Get()
 
-	future := actor.SetSelf(ctx, actor)
+	future := actor.SetSelf(ctx, &actor)
 	future.Get()
-	future2 := actor2.SetSelf(ctx, actor2)
+	future2 := actor2.SetSelf(ctx, &actor2)
 	future2.Get()
 
-	future3 := actor.SendPing(ctx, actor2)
+	future3 := actor.SendPing(ctx, &actor2)
 
 	future3.Get()
 }
