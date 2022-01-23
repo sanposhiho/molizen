@@ -54,7 +54,12 @@ For example, when you pass this `User` interface.
 
 #### options
 
-**TBD**
+```
+-source: Input Go source file.
+-destination: Output file; defaults to stdout.
+-package: Package of the generated code; defaults to the package of the input with a 'actor_' prefix.
+-copyright_file: Copyright file used to add copyright header
+```
 
 ### 2. use Actor
 
