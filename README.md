@@ -15,16 +15,13 @@ This is a POWERFUL WEAPON to defeat "the difficulty of parallel programming" lik
 	- [Design](#design)
 		- [Actor reentrancy](#actor-reentrancy)
 	- [What is actor-model?](#what-is-actor-model)
-		- [Differences from CSP](#differences-from-csp)
-		- [Benefits](#benefits)
 	- [Background](#background)
 		- [race condition and `sync` package in Go](#race-condition-and-sync-package-in-go)
 			- [about `-race` option in Go](#about--race-option-in-go)
 	- [Alternatives for actor-model in Go](#alternatives-for-actor-model-in-go)
-		- [asynkron/protoactor-go](#asynkronprotoactor-go)
-			- [Sending messages explicitly](#sending-messages-explicitly)
-			- [un-typed message passing](#un-typed-message-passing)
-		- [ergo-services/ergo](#ergo-servicesergo)
+		- [Sending messages explicitly](#sending-messages-explicitly)
+		- [un-typed message passing](#un-typed-message-passing)
+		- [no actor reentrancy](#no-actor-reentrancy)
 
 
 ## Getting Started
