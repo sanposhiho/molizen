@@ -95,25 +95,35 @@ It is designed with reference to `actor` newly introduced in Swift5.5.
 [0306 Actors | apple/swift-evolution](https://github.com/apple/swift-evolution/blob/23405a18e3ebbe69fcb37b0d316aa4ec5a7b6c46/proposals/0306-actors.md)
 
 In Molizen, you can use actors like `struct` and communicate with other actors by its methods.
-This is a big difference from other actor libraries.
+This is a big difference from other actor libraries in Go.
 
 This allows you to use the benefits of object-oriented programming while working with actors.
 
 ### Actor reentrancy
 
-**TBD**
+Actors in Swift have the feature called "Actor reentrancy" and Molizen follow it.
+> Actor-isolated functions are reentrant.
+> When an actor-isolated function suspends, reentrancy allows other work to execute on the actor before the original actor-isolated function resumes, which we refer to as interleaving.
+> Reentrancy eliminates a source of deadlocks, where two actors depend on each other, can improve overall performance by not unnecessarily blocking work on actors, and offers opportunities for better scheduling of (e.g.) higher-priority tasks.
+> [0306 Actors # Actor reentrancy| apple/swift-evolution](https://github.com/apple/swift-evolution/blob/23405a18e3ebbe69fcb37b0d316aa4ec5a7b6c46/proposals/0306-actors.md#actor-reentrancy)
+
+If no actor reentrancy, you need to be careful with deadlocks and it's too difficult to do that.
+For example, if you write program which two actors send messages to each other,
+both actors will wait for each other to finish processing the message, and a deadlock may occur.
+
+You can see more detailed reason why actor reentrancy is needed in [0306 Actors # Actor reentrancy| apple/swift-evolution](https://github.com/apple/swift-evolution/blob/23405a18e3ebbe69fcb37b0d316aa4ec5a7b6c46/proposals/0306-actors.md#actor-reentrancy)
 
 ## What is actor-model?
 
-**TBD**
+The actor model is a concept developed in the paper "A Universal Modular ACTOR Formalism for Artificial Intelligence" written in 1973.
 
-### Differences from CSP
+This architecture mainly handles an object called "Actor".
+Actors are active objects that perform their roles according to defined behaviors,
+and all operations for actors are performed by message-passing.
 
-**TBD**
-
-### Benefits
-
-**TBD**
+Each actor has its own queue where incoming messages are stored and actors retrieve messages one by one from the queue and process them.
+One of the major advantages of the actor model is that it prevents multiple actions from being performed on a single actor at the same time,
+thus it can prevent data races, etc and protect internal data.
 
 ## Background
 
@@ -155,41 +165,40 @@ But, this is a tool that discovers race conditions at runtime, doesn't check all
 
 ## Alternatives for actor-model in Go
 
-This section compares Molizen with alternatives for actor-model in Go.
+This section compares Molizen with alternatives for actor-model in Go; protoactor-go and ergo.
 
-### asynkron/protoactor-go
-
-[asynkron/protoactor-go](https://github.com/asynkron/protoactor-go)
-
-> Proto Actor - Ultra fast distributed actors for Go, C# and Java/Kotlin
+- [asynkron/protoactor-go](https://github.com/asynkron/protoactor-go)
+- [ergo-services/ergo](https://github.com/ergo-services/ergo)
 
 This is a library for implementing the classic actor model in Go.
 
-Let's look at the differences between Molizen and protoactor-go.
+Let's look at these differences between Molizen and protoactor-go/ergo.
+
+- Sending messages explicitly in protoactor-go.
+- un-typed message passing in protoactor-go.
+- no actor reentrancy in protoactor-go.
 
 #### Sending messages explicitly
 
-The way of communication between actors is very different between Molizen and protoactor-go.
+The way of communication between actors is very different between Molizen and protoactor-go/ergo.
 
-In protoactor-go, you send messages to actors with `context.Send`.
-
-This is simple and easy to understand for those who are familiar with the Actor Model and are used to programming with it.
+In protoactor-go or ergo, you send messages to actors with `context.Send`(protoactor-go) or `process.Send`(ergo).
+This is simple and easy to understand for those who are familiar with the actor-model and are used to programming with actor.
 
 In Molizen, users does not directly send messages.
-
-Communication between actors is done through method calls. Users can benefit from actor-model in a similar way to programming with normal struct.
-
+Communication between actors is done through method calls.
+You can benefit from actor-model in a similar way to programming with normal struct.
 This is easy to understand for users who are familiar with object-oriented programming.
-It also gives you all the benefits of object-oriented programming
--- use an abstraction by `interface`, libraries for mocking, or etc.
 
+And, it also gives you all the benefits of object-oriented programming
+-- use an abstraction by `interface`, libraries for mocking, or etc.
 
 #### un-typed message passing
 
-protoactor-go doesn't support typed message passing.
+protoactor-go and ergo don't support typed message passing.
 You need to convert message one by one in actors.
 
-One big problem is that you can send wrong type messages to actors.
+One big problem is that you can send wrong type messages to actors. Here is the example written with protoactor-go.
 
 ```go
 type Hello struct{ Who string }
@@ -224,8 +233,11 @@ func main() {
 This code passes compiling because any type of message can be sent.
 You can't notice that You are sending the wrong message(`HelloV2`) at compile time.
 
-### ergo-services/ergo
+The same issue also exists in ergo.
 
-[ergo-services/ergo](https://github.com/ergo-services/ergo)
+#### no actor reentrancy
 
-**TBD**
+No actor reentrancy in protoactor-go and ergo.
+
+You need to be careful with deadlocks as described in [Actor reentrancy](#actor-reentrancy),
+otherwise, deadlocks will happen to you.
