@@ -176,9 +176,9 @@ This is a library for implementing the classic actor model in Go.
 
 Let's look at these differences between Molizen and protoactor-go/ergo.
 
-- Sending messages explicitly in protoactor-go.
-- un-typed message passing in protoactor-go.
-- no actor reentrancy in protoactor-go.
+- Sending messages explicitly in protoactor-go and ergo.
+- un-typed message passing in protoactor-go and ergo.
+- no actor reentrancy in protoactor-go and ergo.
 
 #### Sending messages explicitly
 
