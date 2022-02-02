@@ -236,10 +236,3 @@ This code passes compiling because any type of message can be sent.
 You can't notice that You are sending the wrong message(`HelloV2`) at compile time.
 
 The same issue also exists in ergo.
-
-#### no actor reentrancy
-
-No actor reentrancy in protoactor-go and ergo.
-
-You need to be careful with deadlocks as described in [Actor reentrancy](#actor-reentrancy),
-otherwise, deadlocks will happen to you.
