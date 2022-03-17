@@ -43,12 +43,12 @@ func nonactormain() {
 func actormain() {
 	node := node.NewNode()
 	ctx := node.NewContext()
-	actorFuture := actor_user.New(ctx, &User{})
-	actor := actorFuture.Get()
+	actorFuture := actor_user.New(&User{})
+	actor := actorFuture.Get(ctx)
 
 	future := actor.SetAge(ctx, 0)
 	// wait to set age
-	future.Get()
+	future.Get(ctx)
 
 	g := group.NewFutureGroup[actor_user.IncrementAgeResult]()
 	for i := 0; i < 100; i++ {
@@ -56,10 +56,10 @@ func actormain() {
 		g.Register(future, strconv.Itoa(i))
 	}
 
-	g.Wait()
+	g.Wait(ctx)
 
 	future2 := actor.GetAge(ctx)
-	fmt.Println("[using actor] Result: ", future2.Get().Ret0)
+	fmt.Println("[using actor] Result: ", future2.Get(ctx).Ret0)
 }
 
 type User struct {

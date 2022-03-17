@@ -13,19 +13,19 @@ import (
 func main() {
 	node := node.NewNode()
 	ctx := node.NewContext()
-	actorFuture := actor_user.New(ctx, &User{name: "taro"})
-	actor2Future := actor_user.New(ctx, &User{name: "hanako"})
-	actor := actorFuture.Get()
-	actor2 := actor2Future.Get()
+	actorFuture := actor_user.New(&User{name: "taro"})
+	actor2Future := actor_user.New(&User{name: "hanako"})
+	actor := actorFuture.Get(ctx)
+	actor2 := actor2Future.Get(ctx)
 
 	future := actor.SetSelf(ctx, &actor)
-	future.Get()
+	future.Get(ctx)
 	future2 := actor2.SetSelf(ctx, &actor2)
-	future2.Get()
+	future2.Get(ctx)
 
 	future3 := actor.SendPing(ctx, &actor2)
 
-	future3.Get()
+	future3.Get(ctx)
 }
 
 type User struct {
@@ -45,18 +45,18 @@ func (u *User) Name(ctx context.Context) string {
 func (u *User) SendPing(ctx context.Context, to *actor_user.UserActor) {
 	future := to.Ping(ctx, u.self)
 
-	future.Get()
+	future.Get(ctx)
 }
 
 func (u *User) Ping(ctx context.Context, from *actor_user.UserActor) {
 	future := from.Name(ctx)
 
-	name := future.Get().Ret0
+	name := future.Get(ctx).Ret0
 
 	fmt.Printf("Hello %v\n", name)
 
 	future2 := from.Pong(ctx)
-	future2.Get()
+	future2.Get(ctx)
 	return
 }
 

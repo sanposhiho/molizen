@@ -3,6 +3,7 @@ package group
 import (
 	"errors"
 	"fmt"
+	"github.com/sanposhiho/molizen/context"
 	"sync"
 
 	"github.com/sanposhiho/molizen/future"
@@ -28,17 +29,17 @@ func (f FutureGroup[T]) Register(fu *future.Future[T], key string) {
 
 var ErrNotFound = errors.New("future is not found")
 
-func (f FutureGroup[T]) Get(key string) (T, error) {
+func (f FutureGroup[T]) Get(ctx context.Context, key string) (T, error) {
 	fu, ok := f.futures[key]
 	if !ok {
 		var t T
 		return t, fmt.Errorf("get a future, key: %v, err: %w", key, ErrNotFound)
 	}
 
-	return fu.Get(), nil
+	return fu.Get(ctx), nil
 }
 
-func (f FutureGroup[T]) Wait() {
+func (f FutureGroup[T]) Wait(ctx context.Context) {
 	wg := sync.WaitGroup{}
 	for _, fu := range f.futures {
 		fu := fu
@@ -46,7 +47,7 @@ func (f FutureGroup[T]) Wait() {
 		go func() {
 			defer wg.Done()
 
-			fu.Get()
+			fu.Get(ctx)
 		}()
 	}
 

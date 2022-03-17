@@ -15,8 +15,8 @@ import (
 func main() {
 	node := node.NewNode()
 	ctx := node.NewContext()
-	actorFuture := actor_user.New(ctx, &User{})
-	actor := actorFuture.Get()
+	actorFuture := actor_user.New(&User{})
+	actor := actorFuture.Get(ctx)
 
 	g := group.NewFutureGroup[actor_user.SayResult]()
 	for i := 0; i < 100; i++ {
@@ -24,7 +24,7 @@ func main() {
 		g.Register(future, strconv.Itoa(i))
 	}
 
-	g.Wait()
+	g.Wait(ctx)
 }
 
 type User struct {

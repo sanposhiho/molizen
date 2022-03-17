@@ -171,9 +171,9 @@ func (g *Generator) GenerateMockMethods(mockType string, intf *model.Interface, 
 
 func (g *Generator) GenerateNewFunction(actorName, originalName string) {
 	g.p("")
-	g.p("func New(ctx context.Context, internal %v) *future.Future[%v] {", originalName, actorName)
+	g.p("func New(internal %v) *future.Future[%v] {", originalName, actorName)
 	g.in()
-	g.p("f := future.New[%v](ctx.SenderLocker(), ctx.SenderUnlocker())", actorName)
+	g.p("f := future.New[%v]()", actorName)
 	g.p("go func(){")
 	g.in()
 	g.p("actor := %v{", actorName)
@@ -224,7 +224,7 @@ func (g *Generator) GenerateMethod(mockType string, m *model.Method, outputPkgPa
 	g.in()
 	g.p("newctx := ctx.NewChildContext(a, %v.lock.Lock, %v.lock.Unlock)", receiverName, receiverName)
 	g.p("")
-	g.p("f := future.New[%v](ctx.SenderLocker(), ctx.SenderUnlocker())", resultType)
+	g.p("f := future.New[%v]()", resultType)
 	g.p("go func(){")
 	g.in()
 	g.p("%s.lock.Lock()", receiverName)

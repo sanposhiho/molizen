@@ -18,6 +18,7 @@ type Context interface {
 	) *context
 	SenderLocker() func()
 	SenderUnlocker() func()
+	HasSender() bool
 }
 
 type context struct {
@@ -67,4 +68,8 @@ func (c *context) SenderLocker() func() {
 
 func (c *context) SenderUnlocker() func() {
 	return c.sender.unlocker
+}
+
+func (c *context) HasSender() bool {
+	return c.SenderUnlocker() != nil && c.SenderLocker() != nil
 }
