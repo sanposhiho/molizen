@@ -24,8 +24,8 @@ type User interface {
 	SetSelf(ctx context.Context, self *UserActor)
 }
 
-func New(ctx context.Context, internal User) *future.Future[UserActor] {
-	f := future.New[UserActor](ctx.SenderLocker(), ctx.SenderUnlocker())
+func New(internal User) *future.Future[UserActor] {
+	f := future.New[UserActor]()
 	go func() {
 		actor := UserActor{
 			internal: internal,
@@ -45,7 +45,7 @@ type NameResult struct {
 func (a *UserActor) Name(ctx context.Context) *future.Future[NameResult] {
 	newctx := ctx.NewChildContext(a, a.lock.Lock, a.lock.Unlock)
 
-	f := future.New[NameResult](ctx.SenderLocker(), ctx.SenderUnlocker())
+	f := future.New[NameResult]()
 	go func() {
 		a.lock.Lock()
 		defer a.lock.Unlock()
@@ -70,7 +70,7 @@ type PingResult struct {
 func (a *UserActor) Ping(ctx context.Context, from *UserActor) *future.Future[PingResult] {
 	newctx := ctx.NewChildContext(a, a.lock.Lock, a.lock.Unlock)
 
-	f := future.New[PingResult](ctx.SenderLocker(), ctx.SenderUnlocker())
+	f := future.New[PingResult]()
 	go func() {
 		a.lock.Lock()
 		defer a.lock.Unlock()
@@ -93,7 +93,7 @@ type PongResult struct {
 func (a *UserActor) Pong(ctx context.Context) *future.Future[PongResult] {
 	newctx := ctx.NewChildContext(a, a.lock.Lock, a.lock.Unlock)
 
-	f := future.New[PongResult](ctx.SenderLocker(), ctx.SenderUnlocker())
+	f := future.New[PongResult]()
 	go func() {
 		a.lock.Lock()
 		defer a.lock.Unlock()
@@ -116,7 +116,7 @@ type SendPingResult struct {
 func (a *UserActor) SendPing(ctx context.Context, to *UserActor) *future.Future[SendPingResult] {
 	newctx := ctx.NewChildContext(a, a.lock.Lock, a.lock.Unlock)
 
-	f := future.New[SendPingResult](ctx.SenderLocker(), ctx.SenderUnlocker())
+	f := future.New[SendPingResult]()
 	go func() {
 		a.lock.Lock()
 		defer a.lock.Unlock()
@@ -139,7 +139,7 @@ type SetSelfResult struct {
 func (a *UserActor) SetSelf(ctx context.Context, self *UserActor) *future.Future[SetSelfResult] {
 	newctx := ctx.NewChildContext(a, a.lock.Lock, a.lock.Unlock)
 
-	f := future.New[SetSelfResult](ctx.SenderLocker(), ctx.SenderUnlocker())
+	f := future.New[SetSelfResult]()
 	go func() {
 		a.lock.Lock()
 		defer a.lock.Unlock()

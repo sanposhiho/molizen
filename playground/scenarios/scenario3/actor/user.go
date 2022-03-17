@@ -20,8 +20,8 @@ type User interface {
 	Say(ctx context.Context, msg string)
 }
 
-func New(ctx context.Context, internal User) *future.Future[UserActor] {
-	f := future.New[UserActor](ctx.SenderLocker(), ctx.SenderUnlocker())
+func New(internal User) *future.Future[UserActor] {
+	f := future.New[UserActor]()
 	go func() {
 		actor := UserActor{
 			internal: internal,
@@ -40,7 +40,7 @@ type SayResult struct {
 func (a *UserActor) Say(ctx context.Context, msg string) *future.Future[SayResult] {
 	newctx := ctx.NewChildContext(a, a.lock.Lock, a.lock.Unlock)
 
-	f := future.New[SayResult](ctx.SenderLocker(), ctx.SenderUnlocker())
+	f := future.New[SayResult]()
 	go func() {
 		a.lock.Lock()
 		defer a.lock.Unlock()

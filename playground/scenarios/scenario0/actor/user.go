@@ -21,8 +21,8 @@ type User interface {
 	GetAge(ctx context.Context) int
 }
 
-func New(ctx context.Context, internal User) *future.Future[UserActor] {
-	f := future.New[UserActor](ctx.SenderLocker(), ctx.SenderUnlocker())
+func New(internal User) *future.Future[UserActor] {
+	f := future.New[UserActor]()
 	go func() {
 		actor := UserActor{
 			internal: internal,
@@ -42,7 +42,7 @@ type GetAgeResult struct {
 func (a *UserActor) GetAge(ctx context.Context) *future.Future[GetAgeResult] {
 	newctx := ctx.NewChildContext(a, a.lock.Lock, a.lock.Unlock)
 
-	f := future.New[GetAgeResult](ctx.SenderLocker(), ctx.SenderUnlocker())
+	f := future.New[GetAgeResult]()
 	go func() {
 		a.lock.Lock()
 		defer a.lock.Unlock()
@@ -67,7 +67,7 @@ type SetAgeResult struct {
 func (a *UserActor) SetAge(ctx context.Context, age int) *future.Future[SetAgeResult] {
 	newctx := ctx.NewChildContext(a, a.lock.Lock, a.lock.Unlock)
 
-	f := future.New[SetAgeResult](ctx.SenderLocker(), ctx.SenderUnlocker())
+	f := future.New[SetAgeResult]()
 	go func() {
 		a.lock.Lock()
 		defer a.lock.Unlock()

@@ -2,36 +2,27 @@ package future
 
 import (
 	"sync"
+
+	"github.com/sanposhiho/molizen/context"
 )
 
 type Future[T any] struct {
-	ch chan T
-	result *T
-	senderLocker *senderLocker
+	ch           chan T
+	result       *T
+	senderLocker senderLocker
 }
 
 type senderLocker struct {
-	mu     sync.Mutex
-	locker       func()
-	unlocker     func()
+	mu           sync.Mutex
 	isLockedByUs bool
 }
 
-func New[T any](
-	locker func(),
-	unlocker func(),
-) *Future[T] {
-	var sl *senderLocker
-	if locker != nil && unlocker != nil {
-		sl = &senderLocker{
-			locker:       locker,
-			unlocker:     unlocker,
-			isLockedByUs: true,
-		}
-	}
+func New[T any]() *Future[T] {
 	return &Future[T]{
 		ch: make(chan T, 1),
-		senderLocker: sl,
+		senderLocker: senderLocker{
+			isLockedByUs: true,
+		},
 	}
 }
 
@@ -39,28 +30,28 @@ func (f *Future[T]) Send(val T) {
 	f.ch <- val
 }
 
-func (f *Future[T]) Get() T {
+func (f *Future[T]) Get(ctx context.Context) T {
 	if f.result == nil {
-		result := f.get()
+		result := f.get(ctx)
 		f.result = &result
 	}
 	return *f.result
 }
 
-func (f *Future[T]) get() T {
-	for  {
+func (f *Future[T]) get(ctx context.Context) T {
+	for {
 		select {
 		case result := <-f.ch:
-			f.lockSender()
+			f.lockSender(ctx)
 			return result
 		default:
-			f.unlockSender()
+			f.unlockSender(ctx)
 		}
 	}
 }
 
-func (f *Future[T]) unlockSender() {
-	if !f.hasSender() {
+func (f *Future[T]) unlockSender(ctx context.Context) {
+	if !ctx.HasSender() {
 		return
 	}
 
@@ -68,14 +59,14 @@ func (f *Future[T]) unlockSender() {
 	defer f.senderLocker.mu.Unlock()
 
 	if f.senderLocker.isLockedByUs {
-		f.senderLocker.unlocker()
+		ctx.SenderUnlocker()()
 		f.senderLocker.isLockedByUs = false
 		return
 	}
 }
 
-func (f *Future[T]) lockSender() {
-	if !f.hasSender() {
+func (f *Future[T]) lockSender(ctx context.Context) {
+	if !ctx.HasSender() {
 		return
 	}
 
@@ -83,12 +74,8 @@ func (f *Future[T]) lockSender() {
 	defer f.senderLocker.mu.Unlock()
 
 	if !f.senderLocker.isLockedByUs {
-		f.senderLocker.locker()
+		ctx.SenderLocker()()
 		f.senderLocker.isLockedByUs = true
 		return
 	}
-}
-
-func (f *Future[T]) hasSender() bool {
-	return f.senderLocker != nil
 }
