@@ -27,7 +27,10 @@ func main() {
 	if err != nil {
 		log.Fatalf("failed to get actor from repo: %v", err)
 	}
-	fmt.Print(a.ActorName())
+	fmt.Println(a.ActorName())
+
+	event := <-repo.Watch().ResultChan()
+	fmt.Print(event.Type)
 }
 
 type User struct {

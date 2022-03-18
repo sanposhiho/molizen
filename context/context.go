@@ -5,8 +5,6 @@ import (
 
 	"github.com/sanposhiho/molizen/actorrepo"
 
-	"github.com/sanposhiho/molizen/actorlet"
-
 	"github.com/sanposhiho/molizen/actor"
 )
 
@@ -25,7 +23,7 @@ type Context interface {
 
 type context struct {
 	mu     sync.Mutex
-	let    *actorlet.ActorLet
+	let    any
 	repos  map[any]any
 	sender *sender
 }
@@ -36,7 +34,7 @@ type sender struct {
 	unlocker func()
 }
 
-func NewInitialContext(let *actorlet.ActorLet) *context {
+func NewInitialContext(let any) *context {
 	return &context{
 		let:    let,
 		sender: &sender{},
