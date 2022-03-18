@@ -1,5 +1,7 @@
 # Molizen
 
+[![Go Reference](https://pkg.go.dev/badge/github.com/sanposhiho/molizen.svg)](https://pkg.go.dev/github.com/sanposhiho/molizen)
+
 **Molizen is not production-ready**
 
 Molizen is a typed actor framework for Go.
