@@ -1,19 +1,15 @@
 package node
 
 import (
-	"github.com/sanposhiho/molizen/actorlet"
 	"github.com/sanposhiho/molizen/context"
 )
 
 type Node struct {
-	actorlet *actorlet.ActorLet
+	actorlet any
 }
 
 func NewNode() *Node {
-	sys := actorlet.NewActorLet()
-	return &Node{
-		actorlet: sys,
-	}
+	return &Node{}
 }
 
 func (n *Node) NewContext() context.Context {
