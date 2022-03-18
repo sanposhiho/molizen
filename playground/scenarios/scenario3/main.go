@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strconv"
 
+	"github.com/sanposhiho/molizen/actor"
 	"github.com/sanposhiho/molizen/context"
 
 	actor_user "github.com/sanposhiho/molizen/playground/scenarios/scenario3/actor"
@@ -15,8 +16,8 @@ import (
 func main() {
 	node := node.NewNode()
 	ctx := node.NewContext()
-	actorFuture := actor_user.New(&User{})
-	actor := actorFuture.Get(ctx)
+	actorFuture := actor_user.New(ctx, &User{}, actor.Option{})
+	actor := actorFuture.Get(ctx).Actor
 
 	g := group.NewFutureGroup[actor_user.SayResult]()
 	for i := 0; i < 100; i++ {

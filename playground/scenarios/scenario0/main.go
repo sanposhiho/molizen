@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 
+	"github.com/sanposhiho/molizen/actor"
 	actor_user "github.com/sanposhiho/molizen/playground/scenarios/scenario0/actor"
 
 	"github.com/sanposhiho/molizen/node"
@@ -13,8 +14,8 @@ import (
 func main() {
 	node := node.NewNode()
 	ctx := node.NewContext()
-	actorFuture := actor_user.New(&User{})
-	actor := actorFuture.Get(ctx)
+	actorFuture := actor_user.New(ctx, &User{}, actor.Option{})
+	actor := actorFuture.Get(ctx).Actor
 
 	// request actor to set age 1.
 	future := actor.SetAge(ctx, 1)

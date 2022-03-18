@@ -32,7 +32,8 @@ func (g *Generator) Generate(pkg *model.Package, outputPkgName string, outputPkg
 		g.GenerateActorStruct(actorName, originalName)
 		g.GenerateOriginalInterface(intf, outputPkgPath)
 		g.GenerateNewFunction(actorName, originalName)
-		g.GenerateMockMethods(actorName, intf, outputPkgPath)
+		g.GenerateNameMethod(actorName)
+		g.GenerateActorMethods(actorName, intf, outputPkgPath)
 	}
 
 	return nil
@@ -127,6 +128,7 @@ func (g *Generator) GenerateActorStruct(actorName, originalName string) {
 	g.p("// %v is a actor of %v interface.", actorName, originalName)
 	g.p("type %v struct {", actorName)
 	g.in()
+	g.p("name string")
 	g.p("lock     sync.Mutex")
 	g.p("internal %v", originalName)
 	g.out()
@@ -159,29 +161,44 @@ func (g *Generator) GenerateOriginalInterface(intf *model.Interface, outputPkgPa
 	g.p("")
 }
 
-func (g *Generator) GenerateMockMethods(mockType string, intf *model.Interface, outputPkgPath string) {
+func (g *Generator) GenerateActorMethods(actorType string, intf *model.Interface, outputPkgPath string) {
 	sort.Slice(intf.Methods, func(i, j int) bool { return intf.Methods[i].Name < intf.Methods[j].Name })
 
 	for _, m := range intf.Methods {
 		g.p("")
-		g.GenerateMethod(mockType, m, outputPkgPath)
+		g.GenerateMethod(actorType, m, outputPkgPath)
 		g.p("")
 	}
 }
 
 func (g *Generator) GenerateNewFunction(actorName, originalName string) {
-	g.p("")
-	g.p("func New(internal %v) *future.Future[%v] {", originalName, actorName)
+	g.p("// NewResult is the result type for New.")
+	g.p("type NewResult struct {")
 	g.in()
-	g.p("f := future.New[%v]()", actorName)
+	g.p("Actor %v", actorName)
+	g.p("// Error is an error that occurred during New.")
+	g.p("Error error")
+	g.out()
+	g.p("}")
+	g.p("")
+	g.p("")
+	g.p("func New(ctx context.Context, internal %v, opts actor.Option) *future.Future[NewResult] {", originalName)
+	g.in()
+	g.p("opts.Complete()")
+	g.p("// TODO: make it selectable for users.")
+	g.p("repo := memory.New[*%v]()", actorName)
+	g.p("context.RegisterActorRepo(ctx, repo)")
+	g.p("f := future.New[NewResult]()")
 	g.p("go func(){")
 	g.in()
 	g.p("actor := %v{", actorName)
 	g.in()
 	g.p("internal: internal,")
+	g.p("name: opts.ActorName,")
 	g.out()
 	g.p("}")
-	g.p("f.Send(actor)")
+	g.p("_, err := repo.Apply(&actor)")
+	g.p("f.Send(NewResult{Actor: actor, Error: err})")
 	g.out()
 	g.p("}()")
 	g.p("")
@@ -191,7 +208,19 @@ func (g *Generator) GenerateNewFunction(actorName, originalName string) {
 	g.p("")
 }
 
-func (g *Generator) GenerateMethod(mockType string, m *model.Method, outputPkgPath string) {
+func (g *Generator) GenerateNameMethod(actorType string) {
+	receiverName := "a"
+	g.p("")
+	g.p("// ActorName returns the actor's name.")
+	g.p("func (%v *%v) ActorName() string {", receiverName, actorType)
+	g.in()
+	g.p("return %v.name", receiverName)
+	g.out()
+	g.p("}")
+	g.p("")
+}
+
+func (g *Generator) GenerateMethod(actorType string, m *model.Method, outputPkgPath string) {
 	receiverName := "a"
 	argNames := g.getArgNames(m)
 	argString := makeArgString(argNames, g.getArgTypes(m, outputPkgPath))
@@ -220,7 +249,7 @@ func (g *Generator) GenerateMethod(mockType string, m *model.Method, outputPkgPa
 	}
 
 	g.p("// %v actor base method.", m.Name)
-	g.p("func (%v *%v) %v(%v) *future.Future[%v] {", receiverName, mockType, m.Name, argString, resultType)
+	g.p("func (%v *%v) %v(%v) *future.Future[%v] {", receiverName, actorType, m.Name, argString, resultType)
 	g.in()
 	g.p("newctx := ctx.NewChildContext(a, %v.lock.Lock, %v.lock.Unlock)", receiverName, receiverName)
 	g.p("")
