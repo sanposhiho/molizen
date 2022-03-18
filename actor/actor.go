@@ -1,3 +1,5 @@
 package actor
 
-type Actor interface{}
+type Actor interface {
+	ActorName() string
+}

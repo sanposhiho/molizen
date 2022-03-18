@@ -1,3 +1,5 @@
+github.com/google/uuid v1.3.0 h1:t6JiXgmwXMjEs8VusXIJk2BXHsn+wx8BZdTaoZ5fu7I=
+github.com/google/uuid v1.3.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
 github.com/sanposhiho/mock v1.6.1-0.20211228070726-5682d2c91548 h1:EPHJxo3izVrU17/pfjp21vDn5a8HSBN5M4ZHK9BgF7k=
 github.com/sanposhiho/mock v1.6.1-0.20211228070726-5682d2c91548/go.mod h1:xoXbftL2wHbuGf9brKu4DaeWn1clfedgxw9yAaUNy58=
 github.com/yuin/goldmark v1.3.5/go.mod h1:mwnBkeHKe2W/ZEtQ+71ViKU8L12m81fl3OWwC1Zlc8k=

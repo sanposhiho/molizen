@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 
+	"github.com/sanposhiho/molizen/actor"
 	actor_user "github.com/sanposhiho/molizen/playground/scenarios/scenario2/actor"
 
 	"github.com/sanposhiho/molizen/node"
@@ -13,10 +14,10 @@ import (
 func main() {
 	node := node.NewNode()
 	ctx := node.NewContext()
-	actorFuture := actor_user.New(&User{name: "taro"})
-	actor2Future := actor_user.New(&User{name: "hanako"})
-	actor := actorFuture.Get(ctx)
-	actor2 := actor2Future.Get(ctx)
+	actorFuture := actor_user.New(ctx, &User{name: "taro"}, actor.Option{})
+	actor2Future := actor_user.New(ctx, &User{name: "hanako"}, actor.Option{})
+	actor := actorFuture.Get(ctx).Actor
+	actor2 := actor2Future.Get(ctx).Actor
 
 	future := actor.SetSelf(ctx, &actor)
 	future.Get(ctx)

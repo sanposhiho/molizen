@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"sync"
 
+	"github.com/sanposhiho/molizen/actor"
 	actor_user "github.com/sanposhiho/molizen/playground/scenarios/scenario1/actor"
 
 	"github.com/sanposhiho/molizen/future/group"
@@ -43,8 +44,8 @@ func nonactormain() {
 func actormain() {
 	node := node.NewNode()
 	ctx := node.NewContext()
-	actorFuture := actor_user.New(&User{})
-	actor := actorFuture.Get(ctx)
+	actorFuture := actor_user.New(ctx, &User{}, actor.Option{})
+	actor := actorFuture.Get(ctx).Actor
 
 	future := actor.SetAge(ctx, 0)
 	// wait to set age
