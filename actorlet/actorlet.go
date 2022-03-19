@@ -2,14 +2,20 @@ package actorlet
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/sanposhiho/molizen/actor"
 	"github.com/sanposhiho/molizen/actorrepo"
+	"github.com/sanposhiho/molizen/event"
 )
 
+type ActorLet interface {
+	Run()
+	Stop()
+}
+
 type actorLet[T1 actor.Actor, T2 actorrepo.ActorRepo[T1]] struct {
-	repo T2
+	repo   T2
+	stopCh chan struct{}
 }
 
 func NewActorLet[T1 actor.Actor, T2 actorrepo.ActorRepo[T1]](repo T2) *actorLet[T1, T2] {
@@ -19,7 +25,20 @@ func NewActorLet[T1 actor.Actor, T2 actorrepo.ActorRepo[T1]](repo T2) *actorLet[
 }
 
 func (l *actorLet[T1, T2]) Run() {
-	for range time.Tick(3 * time.Millisecond) {
-		fmt.Println("Tick!!")
+	ch := l.repo.Watch().ResultChan()
+	for {
+		select {
+		case v := <-ch:
+			if v.Type == event.Added {
+				actor := v.Actor
+				fmt.Print(actor.ActorName())
+			}
+		case <-l.stopCh:
+			return
+		}
 	}
+}
+
+func (l *actorLet[T1, T2]) Stop() {
+	l.stopCh <- struct{}{}
 }

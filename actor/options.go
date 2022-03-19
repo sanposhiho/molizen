@@ -18,6 +18,7 @@ type Option struct {
 func (o *Option) Complete() {
 	if o.ActorName == "" {
 		random, _ := uuid.NewRandom()
+		// use random name.
 		o.ActorName = random.String()
 	}
 }

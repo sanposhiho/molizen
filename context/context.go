@@ -3,9 +3,8 @@ package context
 import (
 	"sync"
 
-	"github.com/sanposhiho/molizen/actorrepo"
-
 	"github.com/sanposhiho/molizen/actor"
+	"github.com/sanposhiho/molizen/actorrepo"
 )
 
 type Context interface {
@@ -23,7 +22,7 @@ type Context interface {
 
 type context struct {
 	mu     sync.Mutex
-	let    any
+	let    map[any]any
 	repos  map[any]any
 	sender *sender
 }
@@ -36,9 +35,9 @@ type sender struct {
 
 func NewInitialContext(let any) *context {
 	return &context{
-		let:    let,
-		sender: &sender{},
+		let:    map[any]any{},
 		repos:  map[any]any{},
+		sender: &sender{},
 	}
 }
 

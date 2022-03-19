@@ -22,7 +22,6 @@ func main() {
 	}
 
 	repo := context.ExtractActorRepo[*actor_user.UserActor](ctx)
-	// try actorrepo.Get
 	a, err := repo.Get(actor.ActorName())
 	if err != nil {
 		log.Fatalf("failed to get actor from repo: %v", err)
