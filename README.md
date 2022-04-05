@@ -23,8 +23,6 @@ This is a POWERFUL WEAPON to defeat "the difficulty of parallel programming" lik
 	- [Alternatives for actor-model in Go](#alternatives-for-actor-model-in-go)
 		- [Sending messages explicitly](#sending-messages-explicitly)
 		- [un-typed message passing](#un-typed-message-passing)
-		- [no actor reentrancy](#no-actor-reentrancy)
-
 
 ## Getting Started
 
